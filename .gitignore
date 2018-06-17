@@ -1,0 +1,13 @@
+[Oo]bj
+[Bb]in
+.vs
+*.user
+*.suo
+*.[Cc]ache
+*.bak
+*.ncb
+*.log
+*.tmp
+*.tmp_proj
+*.DS_Store
+[Tt]humbs.db
