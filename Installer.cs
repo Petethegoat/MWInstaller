@@ -269,6 +269,9 @@ class Installer
         }
     }
 
+    /// <summary>
+    /// This handles most of the package installation instructions- blacklisted files/directories, whitelist regex, etc
+    /// </summary>
     static bool CheckFilters(Package package, FileInfo file)
     {
         if(package.skimESPs && Path.GetExtension(file.Name).ToLower() != ".esp")
