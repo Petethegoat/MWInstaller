@@ -2,7 +2,6 @@ using Microsoft.Win32;
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -29,6 +28,7 @@ class Installer
     /// <param name="args">
     /// Arguments. Currently none supported.
     /// </param
+    [STAThread]
     static void Main(string[] args)
     {
         // Check to see if Morrowind is running; wait for it to close.
@@ -75,7 +75,14 @@ class Installer
         Console.WriteLine("Press Y to begin installation to {0}", installLocation);
         ConsoleKeyInfo key = new ConsoleKeyInfo();
         while(key.KeyChar != char.Parse("y"))
+        {
             key = Console.ReadKey(true);
+            if(key.KeyChar == char.Parse("n"))  // N for Nexus
+            {
+                Nexus.TestRequest();
+                return;
+            }
+        }
 
         Console.WriteLine("\nDownloading {0} package{1}...", packageList.packages.Length, packageList.packages.Length == 1 ? "" : "s");
 
