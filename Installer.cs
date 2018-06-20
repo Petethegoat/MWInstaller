@@ -55,36 +55,38 @@ class Installer
             return;
         }
 
-        try
+        // Get our package list.
+        string packagePath = Path.Combine(installLocation, "packageList.json");
+        PackageList packageList;
+        if(File.Exists(packagePath))
         {
-            WebClient webClient = new WebClient();
+            // TODO: This might cause issues on certain system languages, may need specific encoding.
+            packageList = PackageList.Deserialize(File.ReadAllText(packagePath, Encoding.UTF8));
+        }
+        else
+        {
+            Console.WriteLine("Couldn't find {0}. Press any key to exit.", packagePath);
+            Console.ReadKey();
+            return;
+        }
 
-            string packagePath = Path.Combine(installLocation, "packageList.json");
-            PackageList packageList;
-            if(File.Exists(packagePath))
-            {
-                // TODO: This might cause issues on certain system languages, may need specific encoding.
-                packageList = PackageList.Deserialize(File.ReadAllText(packagePath, Encoding.UTF8));
-            }
-            else
-            {
-                Console.WriteLine("Couldn't find {0}. Press any key to exit.", packagePath);
-                Console.ReadKey();
-                return;
-            }
+        // Show the package list info, and ask to begin installation.
+        Console.WriteLine("{0}, last updated {1}.\nCurated by {2}.\n\n{3}\n", packageList.name, packageList.lastUpdated, packageList.curator, packageList.description);
+        Console.WriteLine("Press Y to begin installation to {0}", installLocation);
+        ConsoleKeyInfo key = new ConsoleKeyInfo();
+        while(key.KeyChar != char.Parse("y"))
+            key = Console.ReadKey(true);
 
-            Console.WriteLine("{0}, last updated {1}.\nCurated by {2}.\n\n{3}\n", packageList.name, packageList.lastUpdated, packageList.curator, packageList.description);
+        Console.WriteLine("\nDownloading {0} package{1}...", packageList.packages.Length, packageList.packages.Length == 1 ? "" : "s");
 
-            Console.WriteLine("Press Y to begin installation to {0}", installLocation);
-            ConsoleKeyInfo key = new ConsoleKeyInfo();
-            while(key.KeyChar != char.Parse("y"))
-                key = Console.ReadKey(true);
-
-            Console.WriteLine("\nDownloading {0} package{1}...", packageList.packages.Length, packageList.packages.Length == 1 ? "" : "s");
-            foreach(string s in packageList.packages)
+        // Go through and download all the listed packages.
+        var webClient = new WebClient();
+        foreach(string s in packageList.packages)
+        {
+            var package = Package.Deserialize(webClient.DownloadString(s));
+            try
             {
                 // Get package name and file URL from the .json
-                var package = Package.Deserialize(webClient.DownloadString(s));
                 webClient.DownloadFile(package.fileURL, package.fileName);
 
                 Console.Write("Installing {0}, by {1}...", package.name, package.author);
@@ -94,13 +96,13 @@ class Installer
                 // Delete the package archive.
                 File.Delete(package.fileName);
             }
-            Console.WriteLine("\nInstallion complete.");
+            catch(Exception e)
+            {
+                Console.WriteLine("\nThere was a problem when downloading {0}: {1}", package.name, e.Message);
+                Console.ReadKey();
+            }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("\nThere was a problem when downloading packages: {0}", e.Message);
-            Console.ReadKey();
-        }
+        Console.WriteLine("\nInstallion complete.");
     }
 
     /// <summary>
