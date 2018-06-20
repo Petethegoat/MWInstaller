@@ -21,6 +21,7 @@ class Installer
     const string dataFiles = "Data Files";
 
     static string installLocation;
+    static string sevenZipLocation;
 
     /// <summary>
     /// Program entry point.
@@ -47,10 +48,11 @@ class Installer
             Console.ReadKey();
             return;
         }
-
-        if(!File.Exists("7za.exe"))
+        if(!Get7ZipLocation(ref sevenZipLocation))
         {
-            Console.WriteLine("Could not find 7za.exe. .7z files will not be extracted.");
+            Console.WriteLine("Could not find 7z.exe. Install 7zip, or place 7z.exe in the same folder. Press any key to exit.");
+            Console.ReadKey();
+            return;
         }
 
         try
@@ -116,7 +118,7 @@ class Installer
             return true;
         }
         // Fall back to the registry.
-        else if(string.IsNullOrEmpty(installLocation))
+        else
         {
             string registryValue = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\bethesda softworks\\Morrowind", "Installed Path", null) as string;
             if(!string.IsNullOrEmpty(registryValue) && File.Exists(Path.Combine(registryValue, "Morrowind.exe")))
@@ -130,6 +132,27 @@ class Installer
         return false;
     }
 
+    static bool Get7ZipLocation(ref string sevenZipLocation)
+    {
+        // First we'll check the current directory.
+        if(File.Exists("7z.exe"))
+        {
+            installLocation = AppDomain.CurrentDomain.BaseDirectory;
+            return true;
+        }
+        else
+        {
+            string registryValue = Registry.GetValue("HKEY_CURRENT_USER\\Software\\7-Zip", "Path", null) as string;
+            if(!string.IsNullOrEmpty(registryValue) && File.Exists(Path.Combine(registryValue, "7z.exe")))
+            {
+                sevenZipLocation = registryValue;
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /// <summary>
     /// Extract an archive to destination, overwriting files when necessary.
     /// </summary>
@@ -139,25 +162,7 @@ class Installer
         Directory.CreateDirectory(destination);
         var success = false;
 
-        switch(Path.GetExtension(package.fileName).ToLower())
-        {
-        case ".zip":
-            {
-                success = ExtractZip(package.fileName, destination);
-                break;
-            }
-        case ".7z":
-            {
-                success = Extract7Zip(package, destination);
-                break;
-            }
-        case ".rar":
-            {
-                success = ExtractRar(package, destination);
-                break;
-            }
-        }
-
+        success = Extract(package, destination);
         InstallPackage(package, destination);
 
         if(Path.Equals(destination, installLocation))
@@ -174,16 +179,19 @@ class Installer
         return success;
     }
 
-    static bool Extract7Zip(Package package, string destination)
+    /// <summary>
+    /// Uses 7zip (7z.exe) to extract any sort of archive we encounter.
+    /// </summary>
+    /// <returns>
+    /// True if it didn't throw an exception, otherwise false.
+    /// </returns>
+    static bool Extract(Package package, string destination)
     {
-        if(!File.Exists("7za.exe"))
-            return false;
-
         try
         {
             ProcessStartInfo p = new ProcessStartInfo
             {
-                FileName = "7za.exe",
+                FileName = Path.Combine(sevenZipLocation, "7z.exe"),
                 Arguments = string.Format("x {0} \"-o{1}\"", package.fileName, destination),
                 WindowStyle = ProcessWindowStyle.Hidden
             };
@@ -196,30 +204,6 @@ class Installer
             Console.WriteLine(Ex.Message);
             return false;
         }
-    }
-
-    static bool ExtractZip(string path, string destination)
-    {
-        using(ZipArchive archive = ZipFile.Open(path, ZipArchiveMode.Read))
-        {
-            foreach(ZipArchiveEntry file in archive.Entries)
-            {
-                string completeFileName = Path.Combine(destination, file.FullName);
-                if(file.Name == "")
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(completeFileName));
-                    continue;
-                }
-                file.ExtractToFile(completeFileName, true);
-            }
-            return true;
-        }
-    }
-
-    static bool ExtractRar(Package package, string destination)
-    {
-        Console.WriteLine("\n .rar archives are not yet supported.");
-        return false;
     }
 
     /// <summary>
