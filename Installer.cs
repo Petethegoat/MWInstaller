@@ -252,12 +252,12 @@ class Installer
                 // If it's an .esp, just put in it Data Files
                 if(f.Extension.ToLower() == ".esp")
                 {
-                    newPath = Path.Combine(installLocation, Morrowind.dataFiles, f.Name);
+                    newPath = Path.Combine(installLocation, dataFiles, f.Name);
                 }
                 // If it has one of the usual directory names, put them and it inside Data Files
-                else if(!f.DirectoryName.Contains(Morrowind.dataFiles) && Morrowind.dataFolders.Contains(f.Directory.Name.ToLower()))
+                else if(!f.DirectoryName.Contains(dataFiles) && dataFolders.Contains(f.Directory.Name.ToLower()))
                 {
-                    newPath = Path.Combine(installLocation, Morrowind.dataFiles, f.Directory.Name, f.Name);
+                    newPath = Path.Combine(installLocation, dataFiles, f.Directory.Name, f.Name);
                 }
                 // Otherwise, just try and stuff it in there and see what happens.
                 else
