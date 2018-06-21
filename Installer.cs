@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Collections.Generic;
 
 /// <summary>
 /// Mod package installer.
@@ -18,6 +19,7 @@ using System.Threading;
 class Installer
 {
     const string dataFiles = "Data Files";
+    static readonly IReadOnlyList<string> dataFolders = new List<string>() { "bookart", "distantland", "docs", "fonts", "icons", "meshes", "music", "mwse", "shaders", "sound", "splash", "textures", "video" };
 
     static string installLocation;
     static string sevenZipLocation;
@@ -105,11 +107,12 @@ class Installer
             }
             catch(Exception e)
             {
-                Console.WriteLine("\nThere was a problem when downloading {0}: {1}", package.name, e.Message);
+                Console.WriteLine("\nThere was a problem when downloading {0}: {1} {2}", package.name, e.Message, e.InnerException.Message);
                 Console.ReadKey();
             }
         }
-        Console.WriteLine("\nInstallion complete.");
+        Console.WriteLine("\nInstallion complete. Press any key to exit.");
+        Console.ReadKey();
     }
 
     /// <summary>
@@ -246,10 +249,21 @@ class Installer
             if(CheckFilters(package, f))
             {
                 string newPath;
+                // If it's an .esp, just put in it Data Files
                 if(f.Extension.ToLower() == ".esp")
-                    newPath = Path.Combine(installLocation, dataFiles, f.Name);
+                {
+                    newPath = Path.Combine(installLocation, Morrowind.dataFiles, f.Name);
+                }
+                // If it has one of the usual directory names, put them and it inside Data Files
+                else if(!f.DirectoryName.Contains(Morrowind.dataFiles) && Morrowind.dataFolders.Contains(f.Directory.Name.ToLower()))
+                {
+                    newPath = Path.Combine(installLocation, Morrowind.dataFiles, f.Directory.Name, f.Name);
+                }
+                // Otherwise, just try and stuff it in there and see what happens.
                 else
+                {
                     newPath = Path.Combine(installLocation, Utils.RelativePath(path, f.FullName));
+                }
 
                 if(File.Exists(newPath))
                     File.Delete(newPath);
