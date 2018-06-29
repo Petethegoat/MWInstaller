@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Modpack Installer")]
 [assembly: AssemblyDescription("Downloads and installs mod packages.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("MWSE Team.")]
+[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCopyright("Copyright © 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
