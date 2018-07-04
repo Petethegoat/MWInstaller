@@ -57,62 +57,73 @@ class Installer
             return;
         }
 
-        // Get our package list.
-        string packagePath = Path.Combine(installLocation, "packageList.json");
-        PackageList packageList;
-        if(File.Exists(packagePath))
-        {
-            // TODO: This might cause issues on certain system languages, may need specific encoding.
-            packageList = PackageList.Deserialize(File.ReadAllText(packagePath, Encoding.UTF8));
-        }
-        else
-        {
-            Console.WriteLine("Couldn't find {0}. Press any key to exit.", packagePath);
-            Console.ReadKey();
-            return;
-        }
+        installLocation = "E:\\Games\\Morrowind Modpack Test";
 
-        // Show the package list info, and ask to begin installation.
-        Console.WriteLine("{0}, last updated {1}.\nCurated by {2}.\n\n{3}\n", packageList.name, packageList.lastUpdated, packageList.curator, packageList.description);
-        Console.WriteLine("Press Y to begin installation to {0}", installLocation);
-        ConsoleKeyInfo key = new ConsoleKeyInfo();
-        while(key.KeyChar != char.Parse("y"))
+        try
         {
-            key = Console.ReadKey(true);
-            if(key.KeyChar == char.Parse("n"))  // N for Nexus
+            // Get our package list.
+            string packagePath = Path.Combine(installLocation, "packageList.json");
+            PackageList packageList;
+            if(File.Exists(packagePath))
             {
-                Nexus.TestRequest();
+                // TODO: This might cause issues on certain system languages, may need specific encoding.
+                packageList = PackageList.Deserialize(File.ReadAllText(packagePath, Encoding.UTF8));
+            }
+            else
+            {
+                Console.WriteLine("Couldn't find {0}.", packagePath);
+                Exit();
                 return;
             }
+
+            // Show the package list info, and ask to begin installation.
+            Console.WriteLine("{0}, last updated {1}.\nCurated by {2}.\n\n{3}\n", packageList.name, packageList.lastUpdated, packageList.curator, packageList.description);
+            Console.WriteLine("Press Y to begin installation to {0}", installLocation);
+            ConsoleKeyInfo key = new ConsoleKeyInfo();
+            while(key.KeyChar != char.Parse("y"))
+            {
+                key = Console.ReadKey(true);
+                if(key.KeyChar == char.Parse("n"))  // N for Nexus
+                {
+                    Nexus.TestRequest();
+                    return;
+                }
+            }
+
+
+            Console.WriteLine("\nDownloading {0} package{1}...", packageList.packages.Length, packageList.packages.Length == 1 ? "" : "s");
+
+            // Go through and download all the listed packages.
+            var webClient = new WebClient();
+            foreach(string s in packageList.packages)
+            {
+                var package = Package.Deserialize(webClient.DownloadString(s));
+                try
+                {
+                    // Get package name and file URL from the .json
+                    webClient.DownloadFile(package.fileURL, package.fileName);
+
+                    Console.Write("Installing {0}, by {1}...", package.name, package.author);
+                    if(ExtractArchive(packageList, package))
+                        Console.Write(" Done.\n");
+
+                    // Delete the package archive.
+                    File.Delete(package.fileName);
+                }
+                catch(Exception e)
+                {
+                    Console.WriteLine("\nThere was a problem when downloading {0}: {1}", package.name, e.Message);
+                    Console.ReadKey();
+                }
+            }
+            Console.WriteLine("\nInstallion complete.");
+            Exit();
         }
-
-        Console.WriteLine("\nDownloading {0} package{1}...", packageList.packages.Length, packageList.packages.Length == 1 ? "" : "s");
-
-        // Go through and download all the listed packages.
-        var webClient = new WebClient();
-        foreach(string s in packageList.packages)
+        catch(Exception e)
         {
-            var package = Package.Deserialize(webClient.DownloadString(s));
-            try
-            {
-                // Get package name and file URL from the .json
-                webClient.DownloadFile(package.fileURL, package.fileName);
-
-                Console.Write("Installing {0}, by {1}...", package.name, package.author);
-                if(ExtractArchive(packageList, package))
-                    Console.Write(" Done.\n");
-
-                // Delete the package archive.
-                File.Delete(package.fileName);
-            }
-            catch(Exception e)
-            {
-                Console.WriteLine("\nThere was a problem when downloading {0}: {1} {2}", package.name, e.Message, e.InnerException.Message);
-                Console.ReadKey();
-            }
+            Console.WriteLine("Encountered exception: {0}", e.Message);
+            Exit();
         }
-        Console.WriteLine("\nInstallion complete. Press any key to exit.");
-        Console.ReadKey();
     }
 
     /// <summary>
@@ -175,18 +186,10 @@ class Installer
         var success = false;
 
         success = Extract(package, destination);
+        Console.ReadKey();
         InstallPackage(package, destination);
 
-        if(Path.Equals(destination, installLocation))
-        {
-            Console.WriteLine("\n\n!!!!! INSTALL DIR DETECTED, ABORTING CLEANUP!!!!!!\n\n");
-            Console.ReadKey();
-            return false;
-        }
-        else
-        {
-            Directory.Delete(destination, true);
-        }
+        Directory.Delete(destination, true);
 
         return success;
     }
@@ -246,6 +249,7 @@ class Installer
         DirectoryInfo d = new DirectoryInfo(path);
         foreach(FileInfo f in d.GetFiles("*", System.IO.SearchOption.AllDirectories))
         {
+            // Regular extraction, check our filters etc.
             if(CheckFilters(package, f))
             {
                 string newPath;
@@ -255,15 +259,21 @@ class Installer
                     newPath = Path.Combine(installLocation, dataFiles, f.Name);
                 }
                 // If it has one of the usual directory names, put them and it inside Data Files
-                else if(!f.DirectoryName.Contains(dataFiles) && dataFolders.Contains(f.Directory.Name.ToLower()))
+                else if(ContainsList(f.FullName, dataFolders))
                 {
-                    newPath = Path.Combine(installLocation, dataFiles, f.Directory.Name, f.Name);
+                    newPath = Path.Combine(installLocation, dataFiles, MatchDataFolder(f.FullName));
                 }
                 // Otherwise, just try and stuff it in there and see what happens.
                 else
                 {
                     newPath = Path.Combine(installLocation, Utils.RelativePath(path, f.FullName));
                 }
+
+                if(newPath == f.FullName)
+                    Console.WriteLine("WHAT THE FUCK"); 
+
+                Console.WriteLine("original path:" + f.FullName);
+                Console.WriteLine("new path:" + newPath);
 
                 if(File.Exists(newPath))
                     File.Delete(newPath);
@@ -272,6 +282,20 @@ class Installer
                     Directory.CreateDirectory(Path.GetDirectoryName(newPath));
 
                 File.Move(f.FullName, newPath);
+            }
+            else
+            {
+                // Handle special extraction if specified
+                if(package.specialExtract.Length > 0)
+                {
+                    Console.Write("\nFalling back to special extraction...\n");
+                    if(f.FullName.Contains(package.specialExtract[0]))
+                    {
+                        string partialPath = Utils.RelativePath(path, package.specialExtract[0]);
+                        partialPath = Utils.RelativePath(partialPath, f.FullName);
+                        Console.Write("\nPartial path: {0}\n", partialPath);
+                    }
+                }
             }
         }
     }
@@ -293,10 +317,47 @@ class Installer
 
         foreach(string blacklist in package.directoryBlacklist)
         {
-            if(file.DirectoryName.Contains(blacklist))  //if the directory the file is in is blacklisted
+            if(file.DirectoryName.ToLower().Contains(blacklist.ToLower()))  //if the directory the file is in is blacklisted
                 return false;
         }
 
         return true;
+    }
+
+    static bool ContainsList(string s, IReadOnlyList<string> list)
+    {
+        foreach(string b in list)
+        {
+            if(s.ToLower().Contains(b.ToLower()))
+                return true;
+        }
+
+        return false;
+    }
+
+    static string MatchDataFolder(string path)
+    {
+        string result = "";
+        while(result == "")
+        {
+            foreach(string dataFolder in dataFolders)
+            {
+                string regex = string.Format(".*/({0}/.*)$", dataFolder);
+                var match = Regex.Match(path, regex, RegexOptions.IgnoreCase);
+                if(match.Success)
+                {
+                    result = match.Groups[0].Value;
+                }
+            }
+
+        }
+        return "pissqueen";
+    }
+
+    static public void Exit()
+    {
+        Console.WriteLine("Press any key to exit.");
+        Console.ReadKey();
+        Environment.Exit(0);
     }
 }

@@ -14,6 +14,7 @@ internal class Package
     [DataMember] internal string filterWhitelist;
     [DataMember] internal string[] fileBlacklist;
     [DataMember] internal string[] directoryBlacklist;
+    [DataMember] internal string[] specialExtract;
 
     internal string fileName;
 
@@ -27,6 +28,7 @@ internal class Package
         p.fileName = Path.GetFileName(p.fileURL);
         p.fileBlacklist = p.fileBlacklist == null ? new string[0] : p.fileBlacklist;
         p.directoryBlacklist = p.directoryBlacklist == null ? new string[0] : p.directoryBlacklist;
+        p.specialExtract = p.specialExtract == null ? new string[0] : p.specialExtract;
 
         return p;
     }

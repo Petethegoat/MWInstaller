@@ -38,6 +38,6 @@ public class Nexus
         Console.WriteLine(downloadURL);
         Clipboard.SetText(downloadURL);
         Console.WriteLine("Copied to clipboard.");
-        Console.ReadKey();
+        Installer.Exit();
     }
 }
