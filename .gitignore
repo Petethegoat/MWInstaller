@@ -11,3 +11,4 @@
 *.tmp_proj
 *.DS_Store
 [Tt]humbs.db
+packages/

@@ -1,0 +1,51 @@
+﻿<Window x:Class="MWInstaller.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MWInstaller"
+        mc:Ignorable="d"
+        Title="MW Installer" Height="450" Width="800" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+    <Grid>
+        <TabControl x:Name="tabControl" SelectedIndex="1">
+            <TabItem Header="Packages">
+                <Grid Background="#FFE5E5E5">
+                    <ListView x:Name="packagesView" HorizontalAlignment="Left" Height="303" Margin="10,52,0,0" VerticalAlignment="Top" Width="612">
+                        <ListView.View>
+                            <GridView AllowsColumnReorder="False">
+                                <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=name}" Width="368"/>
+                                <GridViewColumn Header="Author" DisplayMemberBinding="{Binding Path=author}" Width="192"/>
+                                <GridViewColumn Header="Nexus" DisplayMemberBinding="{Binding Path=requiresNexus}" Width="42"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                    <TextBlock x:Name="packageListTitle" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Package List Title" VerticalAlignment="Top" Width="320" FontWeight="Bold"/>
+                    <TextBlock x:Name="packageListCurator" HorizontalAlignment="Left" Margin="10,31,0,0" TextWrapping="Wrap" Text="Package List Curator" VerticalAlignment="Top" Width="320"/>
+                    <TextBlock x:Name="packageListDescription" HorizontalAlignment="Right" Height="37" Margin="0,10,10,0" TextWrapping="Wrap" Text="Package List Description" VerticalAlignment="Top" Width="439"/>
+                    <Button x:Name="installButton" Content="Install" HorizontalAlignment="Left" Margin="627,348,0,0" VerticalAlignment="Top" Width="147" Height="32" Click="installButton_Click"/>
+                    <Label x:Name="nexusWarning" Content="Nexus API Key Required" HorizontalAlignment="Left" Margin="627,317,0,0" VerticalAlignment="Top" Width="147" Visibility="Hidden"/>
+                    <ProgressBar x:Name="installProgress" HorizontalAlignment="Left" Height="20" Margin="10,360,0,0" VerticalAlignment="Top" Width="612"/>
+                    <Image x:Name="installReadyImage" HorizontalAlignment="Left" Height="147" Margin="627,201,0,0" VerticalAlignment="Top" Width="147" Source="/MWInstaller;component/res/icon.ico"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Configuration">
+                <Grid Background="#FFE5E5E5">
+                    <TextBox x:Name="packageListLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="140,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="554" TextChanged="packageListLocationTextbox_TextChanged"/>
+                    <Button x:Name="packageListLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,10,0,0" VerticalAlignment="Top" Width="75" Click="packageListLocationButton_Click"/>
+                    <Label x:Name="packageListLocationLabel" Content="Package List Location" HorizontalAlignment="Left" Margin="10,8,0,0" VerticalAlignment="Top" Width="125"/>
+                    <TextBox x:Name="morrowindLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="140,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="554"/>
+                    <Button x:Name="morrowindLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,41,0,0" VerticalAlignment="Top" Width="75" Click="morrowindLocationButton_Click"/>
+                    <Label x:Name="morrowindLocationLabel" Content="Morrowind Location" HorizontalAlignment="Left" Margin="10,39,0,0" VerticalAlignment="Top" Width="125"/>
+                    <TextBox x:Name="sevenZipLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="140,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="554"/>
+                    <Button x:Name="sevenZipLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,72,0,0" VerticalAlignment="Top" Width="75" Click="sevenZipLocationButton_Click"/>
+                    <Label x:Name="sevenZipLocationLabel" Content="7 Zip Location" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top" Width="125"/>
+                    <Label x:Name="nexusAPIKeyLabel" Content="Nexus API Key" HorizontalAlignment="Left" Margin="10,354,0,0" VerticalAlignment="Top"/>
+                    <TextBox x:Name="nexusAPIKeyTextBox" HorizontalAlignment="Left" Height="23" Margin="140,356,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="554" TextChanged="nexusAPIKeyTextBox_TextChanged"/>
+                    <Button x:Name="nexusAPIKeyButton" Content="Open Nexus" HorizontalAlignment="Left" Margin="699,336,0,0" VerticalAlignment="Top" Width="75" Height="44" Click="nexusAPIKeyButton_Click"/>
+                    <Label x:Name="nexusAPIKeyWarning" Content="Your API key doesn't appear to be valid. Please double check, and generate a new one if necessary." HorizontalAlignment="Left" Margin="140,325,0,0" VerticalAlignment="Top" Width="554"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+    </Grid>
+</Window>
