@@ -67,6 +67,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="src\Config.cs" />
     <Compile Include="src\Extraction.cs" />
     <Compile Include="src\Installer.cs" />
     <Compile Include="src\Morrowind.cs" />
@@ -117,6 +118,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="res\icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="res\tick-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

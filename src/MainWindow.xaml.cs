@@ -34,7 +34,7 @@ namespace MWInstaller
         private void nexusAPIKeyTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             if(nexusAPIKeyTextBox.Text.Length > 0)
-                nexusAPIKeyButton.Content = "Validate API Key";
+                nexusAPIKeyButton.Content = "Validate";
             else
                 nexusAPIKeyButton.Content = "Open Nexus";
         }
@@ -91,6 +91,12 @@ namespace MWInstaller
                 packageList = PackageList.Deserialize(File.ReadAllText(listPath));
 
                 PackageListUpdated();
+
+                packageListSuccessTick.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                packageListSuccessTick.Visibility = Visibility.Hidden;
             }
 
             CheckInstallability();
@@ -109,22 +115,41 @@ namespace MWInstaller
 
         private void CheckInstallability(bool forceFail = false)
         {
-            //Update Nexus requirement
-            bool reqNex = false;
-            foreach(Package p in packages)
+            bool readyForInstall = true;
+
+            if(!Morrowind.CheckLocation(morrowindLocationTextbox.Text))
+                readyForInstall = false;
+            if(!Extraction.CheckLocation(sevenZipLocationTextbox.Text))
+                readyForInstall = false;
+            if(!File.Exists(packageListLocationTextbox.Text))
+                readyForInstall = false;
+
+            bool nexusWarnings = false;
+            if(packages != null)
             {
-                if(!p.requiresNexus)
-                    continue;
-                reqNex = true;
-                break;
+                //Update Nexus requirement
+                bool reqNex = false;
+                foreach(Package p in packages)
+                {
+                    if(!p.requiresNexus)
+                        continue;
+                    reqNex = true;
+                    break;
+                }
+
+                nexusWarnings = (reqNex && !(nexusAPIKeyTextBox.Text.Trim().Length > 0)) || forceFail;
+            }
+            else
+            {
+                readyForInstall = false;
             }
 
-            bool showWarnings = (reqNex && !(nexusAPIKeyTextBox.Text.Trim().Length > 0)) || forceFail;
+            nexusWarning.Visibility = nexusWarnings ? Visibility.Visible : Visibility.Hidden;
+            nexusAPIKeyWarning.Visibility = nexusWarnings ? Visibility.Visible : Visibility.Hidden;
+            nexusSuccessTick.Visibility = !nexusWarnings ? Visibility.Visible : Visibility.Hidden;
 
-            installButton.IsEnabled = !showWarnings;
-            nexusWarning.Visibility = showWarnings ? Visibility.Visible : Visibility.Hidden;
-            nexusAPIKeyWarning.Visibility = showWarnings ? Visibility.Visible : Visibility.Hidden;
-            installReadyImage.Visibility = !showWarnings ? Visibility.Visible : Visibility.Hidden;
+            installButton.IsEnabled = !nexusWarnings && readyForInstall;
+            installReadyImage.Visibility = !nexusWarnings && readyForInstall ? Visibility.Visible : Visibility.Hidden;
         }
 
         private void installButton_Click(object sender, RoutedEventArgs e)
@@ -148,6 +173,26 @@ namespace MWInstaller
             installReadyImage.Visibility = Visibility.Hidden;
 
             MessageBoxResult result = MessageBox.Show("Installation complete.");
+        }
+
+        private void sevenZipLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if(Extraction.CheckLocation(sevenZipLocationTextbox.Text))
+                sevenZipSuccessTick.Visibility = Visibility.Visible;
+            else
+                sevenZipSuccessTick.Visibility = Visibility.Hidden;
+
+            CheckInstallability();
+        }
+
+        private void morrowindLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
+        {
+            if(Morrowind.CheckLocation(morrowindLocationTextbox.Text))
+                morrowindSuccessTick.Visibility = Visibility.Visible;
+            else
+                morrowindSuccessTick.Visibility = Visibility.Hidden;
+
+            CheckInstallability();
         }
     }
 }

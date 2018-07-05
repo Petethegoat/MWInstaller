@@ -33,6 +33,7 @@ namespace MWInstaller
                     DownloadPackage(pak);
                     Unpack(pak, list);
                     DeleteArchive(pak);
+                    InstallPackage(pak);
                     worker.ReportProgress(paks.IndexOf(pak) + 1);
                 }
             };
@@ -47,7 +48,7 @@ namespace MWInstaller
                 completeEvent.Invoke(null, null);
             };
 
-            worker.RunWorkerAsync(paks);
+            worker.RunWorkerAsync();
         }
 
 
@@ -73,6 +74,11 @@ namespace MWInstaller
         {
             var destination = Path.Combine(Path.GetTempPath(), list.name, pak.name);
             Extraction.Extract(pak, destination);
+        }
+
+        private static void InstallPackage(Package pak)
+        {
+
         }
 
         private static void DeleteArchive(Package pak)

@@ -2,8 +2,6 @@ using System.IO;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using System.Collections.Generic;
-using System.Net;
 
 namespace MWInstaller
 {
@@ -12,13 +10,13 @@ namespace MWInstaller
     {
         [DataMember] public string name { get; set; }
         [DataMember] public string author { get; set; }
-                     public bool requiresNexus { get; set; }
         [DataMember] internal string fileURL;
         [DataMember] internal string filterWhitelist;
         [DataMember] internal string[] fileBlacklist;
         [DataMember] internal string[] directoryBlacklist;
         [DataMember] internal string[] specialExtract;
 
+        public bool requiresNexus { get; set; }
         internal string fileName;
 
         public static Package Deserialize(string json)
