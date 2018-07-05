@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MWInstaller"
         mc:Ignorable="d"
-        Title="MW Installer" Height="450" Width="800" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="MW Installer" Height="460" Width="810" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Grid>
         <TabControl x:Name="tabControl" SelectedIndex="1">
             <TabItem Header="Packages">
@@ -19,7 +19,7 @@
                             </GridView>
                         </ListView.View>
                     </ListView>
-                    <TextBlock x:Name="packageListTitle" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Package List Title" VerticalAlignment="Top" Width="320" FontWeight="Bold"/>
+                    <TextBlock x:Name="packageListTitle" HorizontalAlignment="Left" Margin="10,6,0,0" TextWrapping="Wrap" Text="Package List Title" VerticalAlignment="Top" Width="320" FontWeight="Bold" Height="30" FontSize="20"/>
                     <TextBlock x:Name="packageListCurator" HorizontalAlignment="Left" Margin="10,31,0,0" TextWrapping="Wrap" Text="Package List Curator" VerticalAlignment="Top" Width="320"/>
                     <TextBlock x:Name="packageListDescription" HorizontalAlignment="Right" Height="37" Margin="0,10,10,0" TextWrapping="Wrap" Text="Package List Description" VerticalAlignment="Top" Width="439"/>
                     <Button x:Name="installButton" Content="Install" HorizontalAlignment="Left" Margin="627,348,0,0" VerticalAlignment="Top" Width="147" Height="32" Click="installButton_Click"/>

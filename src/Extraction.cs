@@ -56,6 +56,8 @@ namespace MWInstaller
 
         public static bool CheckLocation(string path)
         {
+            if(path == "" || path == null)
+                return false;
             if(File.Exists(Path.Combine(path, "7z.exe")))
                 return true;
 

@@ -7,6 +7,10 @@ namespace MWInstaller
 {
     static class Morrowind
     {
+        public static string morrowindPath;
+        public const string dataFiles = "Data Files";
+        public static string dataFoldersRegex = "bookart|distantland|docs|fonts|icons|meshes|music|mwse|shaders|sound|splash|textures|video";
+
         /// <summary>
         /// Determines if Morrowind is currently running in the background.
         /// </summary>
@@ -52,6 +56,8 @@ namespace MWInstaller
 
         public static bool CheckLocation(string path)
         {
+            if(path == "" || path == null)
+                return false;
             if(File.Exists(Path.Combine(path, "Morrowind.exe")))
                 return true;
 

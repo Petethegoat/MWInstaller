@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Net;
-using System.ComponentModel;
+using System.Text.RegularExpressions;
 
 namespace MWInstaller
 {
@@ -33,7 +33,7 @@ namespace MWInstaller
                     DownloadPackage(pak);
                     Unpack(pak, list);
                     DeleteArchive(pak);
-                    InstallPackage(pak);
+                    InstallPackage(pak, list);
                     worker.ReportProgress(paks.IndexOf(pak) + 1);
                 }
             };
@@ -76,9 +76,56 @@ namespace MWInstaller
             Extraction.Extract(pak, destination);
         }
 
-        private static void InstallPackage(Package pak)
+        private static void InstallPackage(Package pak, PackageList list)
         {
+            var packagePath = Path.Combine(Path.GetTempPath(), list.name, pak.name);
+            DirectoryInfo d = new DirectoryInfo(packagePath);
 
+            foreach(FileInfo f in d.GetFiles("*", SearchOption.AllDirectories))
+            {
+                string installPath;
+                Match hasDataFiles = Regex.Match(Path.GetDirectoryName(f.FullName), string.Format(".*((?:{0}).*)", Morrowind.dataFiles), RegexOptions.IgnoreCase);
+                Match hasDataFolder = Regex.Match(Path.GetDirectoryName(f.FullName), string.Format(".*((?:{0}).*)", Morrowind.dataFoldersRegex), RegexOptions.IgnoreCase);
+                bool warnOnNameChange = true;
+
+                if(f.Extension.ToLower() == ".esp") // if it's an .esp
+                {
+                    installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, f.Name);
+                }
+                else if(hasDataFiles.Success) // if it has data files in the path
+                {
+                    //System.Diagnostics.Debug.WriteLine(string.Format("DataFiles Success: {0}", hasDataFiles.Groups[1].Value));
+                    installPath = Path.Combine(Morrowind.morrowindPath, hasDataFiles.Groups[1].Value, f.Name);
+                }
+                else if(hasDataFolder.Success) // if it has a data folder (meshes, textures) in the path
+                {
+                    //System.Diagnostics.Debug.WriteLine(string.Format("DataFolder Success: {0}", hasDataFolder.Groups[1].Value));
+                    installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, hasDataFolder.Groups[1].Value, f.Name);
+                }
+                else if(f.Name.ToLower().Contains("readme")) // if it appears to be a readme
+                {
+                    installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, "docs\\", string.Format("{0}_{1}", pak.name, f.Name));
+                    warnOnNameChange = false;
+                }
+                else // if it doesn't match anything else, just put it in.
+                {
+                    installPath = Path.Combine(Morrowind.morrowindPath, Utils.RelativePath(packagePath, f.FullName));
+                    System.Diagnostics.Debug.WriteLine(string.Format("Uncertain install: {0}", installPath));
+                }
+
+                if(warnOnNameChange && Path.GetFileName(installPath) != f.Name)
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("Filename changed: {0} to {1}", f.FullName, installPath));
+                }
+
+                if(File.Exists(installPath))
+                    File.Delete(installPath);
+
+                if(!Directory.Exists(installPath))
+                    Directory.CreateDirectory(Path.GetDirectoryName(installPath));
+
+                File.Move(f.FullName, installPath);
+            }
         }
 
         private static void DeleteArchive(Package pak)

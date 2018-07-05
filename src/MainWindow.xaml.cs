@@ -1,6 +1,6 @@
-﻿using System.Windows;
+﻿using System.Collections.Generic;
 using System.IO;
-using System.Collections.Generic;
+using System.Windows;
 
 namespace MWInstaller
 {
@@ -26,9 +26,12 @@ namespace MWInstaller
         private void PrefillConfiguration()
         {
             morrowindLocationTextbox.Text = Morrowind.GetInstallLocation();
+            Morrowind.morrowindPath = morrowindLocationTextbox.Text;
             sevenZipLocationTextbox.Text = Extraction.GetInstallLocation();
             Extraction.sevenZipPath = sevenZipLocationTextbox.Text;
             packageListLocationTextbox.Text = Path.Combine(morrowindLocationTextbox.Text, "packageList.json");
+            nexusAPIKeyTextBox.Text = "MjZnTzBFOUxYa0ZDVS9HYU1iekQwZmNQUUhmSkl1bGFWWGw2eFc3dTRPNDNzYXlKUUxkWWt5N25BdHU4UFZqbHptMXlnTit3Y0VHbmVVN1U3cGRHSUE9PS0tQlhrNll3d0VVa0RpR2p4OVBLUFlwZz09--d2fe47ee2a83d880d5279591311394bdaabbd8ad";
+            nexusAPIKeyButton_Click(null, null);
         }
 
         private void nexusAPIKeyTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -43,8 +46,7 @@ namespace MWInstaller
         {
             if(nexusAPIKeyTextBox.Text.Length > 0)
             {
-                var success = Nexus.ValidateAPIKey(nexusAPIKeyTextBox.Text);
-                if(success)
+                if(Nexus.ValidateAPIKey(nexusAPIKeyTextBox.Text))
                     CheckInstallability();
                 else
                     CheckInstallability(true);
@@ -117,9 +119,9 @@ namespace MWInstaller
         {
             bool readyForInstall = true;
 
-            if(!Morrowind.CheckLocation(morrowindLocationTextbox.Text))
+            if(!Morrowind.CheckLocation(Morrowind.morrowindPath))
                 readyForInstall = false;
-            if(!Extraction.CheckLocation(sevenZipLocationTextbox.Text))
+            if(!Extraction.CheckLocation(Extraction.sevenZipPath))
                 readyForInstall = false;
             if(!File.Exists(packageListLocationTextbox.Text))
                 readyForInstall = false;
@@ -177,7 +179,9 @@ namespace MWInstaller
 
         private void sevenZipLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if(Extraction.CheckLocation(sevenZipLocationTextbox.Text))
+            Extraction.sevenZipPath = sevenZipLocationTextbox.Text;
+
+            if(Extraction.CheckLocation(Extraction.sevenZipPath))
                 sevenZipSuccessTick.Visibility = Visibility.Visible;
             else
                 sevenZipSuccessTick.Visibility = Visibility.Hidden;
@@ -187,7 +191,9 @@ namespace MWInstaller
 
         private void morrowindLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            if(Morrowind.CheckLocation(morrowindLocationTextbox.Text))
+            Morrowind.morrowindPath = morrowindLocationTextbox.Text;
+
+            if(Morrowind.CheckLocation(Morrowind.morrowindPath))
                 morrowindSuccessTick.Visibility = Visibility.Visible;
             else
                 morrowindSuccessTick.Visibility = Visibility.Hidden;
