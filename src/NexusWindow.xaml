@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MWInstaller"
         mc:Ignorable="d"
-        Title="Nexus" Height="460" Width="810" ResizeMode="NoResize" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen">
+        Title="Nexus" Height="450" Width="800" ResizeMode="NoResize" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen">
     <Grid>
-        <ListView x:Name="fileList" HorizontalAlignment="Left" Height="329" Margin="10,83,0,0" VerticalAlignment="Top" Width="767" SelectionChanged="fileList_SelectionChanged">
+        <ListView x:Name="fileList" HorizontalAlignment="Left" Height="329" Margin="10,83,0,0" VerticalAlignment="Top" Width="774" SelectionChanged="fileList_SelectionChanged">
             <ListView.View>
                 <GridView AllowsColumnReorder="False">
                     <GridViewColumn Header="File ID" DisplayMemberBinding="{Binding Path=file_id}" Width="92"/>
@@ -17,12 +17,12 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="inputURL" HorizontalAlignment="Left" Height="23" Margin="80,12,0,0" VerticalAlignment="Top" Width="697" TextChanged="inputURL_TextChanged"/>
+        <TextBox x:Name="inputURL" HorizontalAlignment="Left" Height="23" Margin="80,12,0,0" VerticalAlignment="Top" Width="704" TextChanged="inputURL_TextChanged"/>
         <Label x:Name="label" Content="Input URL:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Button x:Name="getURL" Content="Get File List" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="102" Height="38" Click="getURL_Click" IsEnabled="False"/>
-        <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" VerticalAlignment="Top" Width="424" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
+        <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" VerticalAlignment="Top" Width="431" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
         <Label x:Name="label_Copy" Content="API Download URL:" HorizontalAlignment="Left" Margin="117,46,0,0" VerticalAlignment="Top"/>
-        <Button x:Name="clipboard" Content="Copy to Clipboard" HorizontalAlignment="Left" Margin="663,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="clipboard_Click" IsEnabled="False"/>
+        <Button x:Name="clipboard" Content="Copy to Clipboard" HorizontalAlignment="Left" Margin="670,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="clipboard_Click" IsEnabled="False"/>
 
     </Grid>
 </Window>

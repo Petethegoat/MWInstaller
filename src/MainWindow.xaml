@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MWInstaller"
         mc:Ignorable="d"
-        Title="MW Installer" Height="460" Width="810" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="MW Installer" Height="450" Width="800" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Grid>
         <TabControl x:Name="tabControl" SelectedIndex="1">
             <TabItem Header="Packages">
