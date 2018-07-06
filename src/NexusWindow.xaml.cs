@@ -33,7 +33,7 @@ namespace MWInstaller
             if(e.AddedItems.Count == 1)
             {
                 NexusFiles files = e.AddedItems[0] as NexusFiles;
-                apiURL.Text = nexusAPIURL + "/" + files.file_id;
+                apiURL.Text = nexusAPIURL + "/files/" + files.file_id + "/download_link";
             }
         }
 
