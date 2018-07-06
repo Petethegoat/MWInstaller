@@ -174,7 +174,7 @@ namespace MWInstaller
         {
             installReadyImage.Visibility = Visibility.Hidden;
 
-            MessageBoxResult result = MessageBox.Show("Installation complete.");
+            MessageBox.Show("Installation complete.");
         }
 
         private void sevenZipLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

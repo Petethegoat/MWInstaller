@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -83,12 +84,26 @@ namespace MWInstaller
 
             foreach(FileInfo f in d.GetFiles("*", SearchOption.AllDirectories))
             {
+                // First, extract special files. They ignore all filters and normal installation rules, in favor of going directly to a certain directory.
+                if(SpecialExtract(f, pak))
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("File specially extracted: {0}", f.FullName));
+                    continue;
+                }
+
+                // Check for filter exclusions.
+                if(ExcludedByFilter(f, pak))
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("File excluded: {0}", f.FullName));
+                    continue;
+                }
+
                 string installPath;
                 Match hasDataFiles = Regex.Match(Path.GetDirectoryName(f.FullName), string.Format(".*((?:{0}).*)", Morrowind.dataFiles), RegexOptions.IgnoreCase);
                 Match hasDataFolder = Regex.Match(Path.GetDirectoryName(f.FullName), string.Format(".*((?:{0}).*)", Morrowind.dataFoldersRegex), RegexOptions.IgnoreCase);
                 bool warnOnNameChange = true;
 
-                if(f.Extension.ToLower() == ".esp") // if it's an .esp
+                if(f.Extension.Fix() == ".esp") // if it's an .esp
                 {
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, f.Name);
                 }
@@ -102,7 +117,7 @@ namespace MWInstaller
                     //System.Diagnostics.Debug.WriteLine(string.Format("DataFolder Success: {0}", hasDataFolder.Groups[1].Value));
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, hasDataFolder.Groups[1].Value, f.Name);
                 }
-                else if(f.Name.ToLower().Contains("readme")) // if it appears to be a readme
+                else if(f.Name.Fix().Contains("readme")) // if it appears to be a readme
                 {
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, "docs\\", string.Format("{0}_{1}", pak.name, f.Name));
                     warnOnNameChange = false;
@@ -113,24 +128,82 @@ namespace MWInstaller
                     System.Diagnostics.Debug.WriteLine(string.Format("Uncertain install: {0}", installPath));
                 }
 
+                // Warning if name changed.
                 if(warnOnNameChange && Path.GetFileName(installPath) != f.Name)
                 {
                     System.Diagnostics.Debug.WriteLine(string.Format("Filename changed: {0} to {1}", f.FullName, installPath));
                 }
 
-                if(File.Exists(installPath))
-                    File.Delete(installPath);
-
-                if(!Directory.Exists(installPath))
-                    Directory.CreateDirectory(Path.GetDirectoryName(installPath));
-
-                File.Move(f.FullName, installPath);
+                InstallFile(f, installPath);
             }
         }
 
         private static void DeleteArchive(Package pak)
         {
             File.Delete(pak.fileName);
+        }
+
+        private static bool ExcludedByFilter(FileInfo file, Package pak)
+        {
+            // Whitelist
+            if(!string.IsNullOrEmpty(pak.filterWhitelist))
+            {
+                if(!Regex.Match(file.FullName.Fix(), pak.filterWhitelist, RegexOptions.IgnoreCase).Success)
+                    return true;
+            }
+
+            // File Blacklist
+            foreach(string s in pak.fileBlacklist)
+            {
+                if(s.Fix().Contains(file.Name.Fix()))
+                    return true;
+            }
+
+            // Directory Blacklist
+            foreach(string s in pak.directoryBlacklist)
+            {
+                if(file.FullName.Fix().Contains(s.Fix()))
+                    return true;
+            }
+
+            // This file wasn't filtered out! Nice!
+            return false;
+        }
+
+        private static bool SpecialExtract(FileInfo file, Package pak)
+        {
+            foreach(string key in pak.specialExtract.Keys)
+            {
+                if(file.FullName.Fix().Contains(key.Fix()))
+                {
+                    System.Diagnostics.Debug.WriteLine(string.Format("File {0} was extracted to {1}", file.FullName, pak.specialExtract[key]));
+                    InstallFile(file, Path.Combine(Morrowind.morrowindPath, pak.specialExtract[key]));
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static void InstallFile(FileInfo file, string installPath)
+        {
+            if(File.Exists(installPath))
+                File.Delete(installPath);
+
+            if(!Directory.Exists(installPath))
+                Directory.CreateDirectory(Path.GetDirectoryName(installPath));
+
+            File.Move(file.FullName, installPath);
+        }
+
+        /// <summary>
+        /// Lowers case, and replaces backslashes with forward slashes for consistent comparisons.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>Fixed string.</returns>
+        private static string Fix(this string path)
+        {
+            return path.ToLower().Replace("\\", "/");
         }
     }
 }
