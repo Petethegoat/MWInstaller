@@ -65,7 +65,7 @@ namespace MWInstaller
             string url = pak.fileURL;
 
             if(pak.requiresNexus)
-                url = Nexus.GetNexusDownloadURL(pak.fileURL, Nexus.apiKey);
+                url = Nexus.GetNexusDownloadURL(pak.fileURL);
 
             var webClient = new WebClient();
             webClient.DownloadFile(url, pak.fileName);
@@ -103,26 +103,26 @@ namespace MWInstaller
                 Match hasDataFolder = Regex.Match(Path.GetDirectoryName(f.FullName), string.Format(".*((?:{0}).*)", Morrowind.dataFoldersRegex), RegexOptions.IgnoreCase);
                 bool warnOnNameChange = true;
 
-                if(f.Extension.Fix() == ".esp") // if it's an .esp
+                if(f.Extension.Fix() == ".esp") // If it's an .esp
                 {
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, f.Name);
                 }
-                else if(hasDataFiles.Success) // if it has data files in the path
+                else if(hasDataFiles.Success) // If it has data files in the path.
                 {
                     //System.Diagnostics.Debug.WriteLine(string.Format("DataFiles Success: {0}", hasDataFiles.Groups[1].Value));
                     installPath = Path.Combine(Morrowind.morrowindPath, hasDataFiles.Groups[1].Value, f.Name);
                 }
-                else if(hasDataFolder.Success) // if it has a data folder (meshes, textures) in the path
+                else if(hasDataFolder.Success) // If it has a data folder (meshes, textures) in the path.
                 {
                     //System.Diagnostics.Debug.WriteLine(string.Format("DataFolder Success: {0}", hasDataFolder.Groups[1].Value));
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, hasDataFolder.Groups[1].Value, f.Name);
                 }
-                else if(f.Name.Fix().Contains("readme")) // if it appears to be a readme
+                else if(f.Name.Fix().Contains("readme")) // If it appears to be a readme.
                 {
                     installPath = Path.Combine(Morrowind.morrowindPath, Morrowind.dataFiles, "docs\\", string.Format("{0}_{1}", pak.name, f.Name));
                     warnOnNameChange = false;
                 }
-                else // if it doesn't match anything else, just put it in.
+                else // If it doesn't match anything else, just put it in.
                 {
                     installPath = Path.Combine(Morrowind.morrowindPath, Utils.RelativePath(packagePath, f.FullName));
                     System.Diagnostics.Debug.WriteLine(string.Format("Uncertain install: {0}", installPath));

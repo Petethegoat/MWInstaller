@@ -46,6 +46,7 @@
     <Reference Include="Ookii.Dialogs.Wpf, Version=1.0.0.0, Culture=neutral, PublicKeyToken=0c15020868fd6249, processorArchitecture=MSIL">
       <HintPath>packages\Ookii.Dialogs.1.0\lib\net35\Ookii.Dialogs.Wpf.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
@@ -72,6 +73,9 @@
     <Compile Include="src\Installer.cs" />
     <Compile Include="src\Morrowind.cs" />
     <Compile Include="src\Nexus.cs" />
+    <Compile Include="src\NexusWindow.xaml.cs">
+      <DependentUpon>NexusWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="src\Package.cs" />
     <Compile Include="src\PackageList.cs" />
     <Compile Include="src\Utils.cs" />
@@ -87,6 +91,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="src\NexusWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

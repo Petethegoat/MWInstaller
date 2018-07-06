@@ -26,6 +26,7 @@
                     <Label x:Name="nexusWarning" Content="Nexus API Key Required" HorizontalAlignment="Left" Margin="627,317,0,0" VerticalAlignment="Top" Width="147" Visibility="Hidden"/>
                     <ProgressBar x:Name="installProgress" HorizontalAlignment="Left" Height="20" Margin="10,360,0,0" VerticalAlignment="Top" Width="612"/>
                     <Image x:Name="installReadyImage" HorizontalAlignment="Left" Height="147" Margin="627,201,0,0" VerticalAlignment="Top" Width="147" Source="/MWInstaller;component/res/icon.ico"/>
+                    <TextBlock x:Name="packageListUpdated" HorizontalAlignment="Left" Margin="627,52,0,0" TextWrapping="Wrap" Text="Last updated:" VerticalAlignment="Top" Height="64" Width="147" FontSize="14"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Configuration">
@@ -47,6 +48,11 @@
                     <Image x:Name="sevenZipSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,71,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>
                     <Image x:Name="morrowindSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,40,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>
                     <Image x:Name="packageListSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,9,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Package List Creation">
+                <Grid Background="#FFE5E5E5">
+                    <Button x:Name="creatorButton" Content="Nexus Download Link Helper" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="190" Height="48" Click="creatorButton_Click"/>
                 </Grid>
             </TabItem>
         </TabControl>

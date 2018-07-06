@@ -109,6 +109,7 @@ namespace MWInstaller
             packageListTitle.Text = packageList.name;
             packageListCurator.Text = string.Format("Curated by: {0}", packageList.curator);
             packageListDescription.Text = packageList.description;
+            packageListUpdated.Text = "Last updated:\n" + packageList.lastUpdated;
             packages = packageList.GetPackages();
             packagesView.ItemsSource = packages;
 
@@ -199,6 +200,12 @@ namespace MWInstaller
                 morrowindSuccessTick.Visibility = Visibility.Hidden;
 
             CheckInstallability();
+        }
+
+        private void creatorButton_Click(object sender, RoutedEventArgs e)
+        {
+            NexusWindow nexus = new NexusWindow();
+            nexus.Show();
         }
     }
 }
