@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Data;
 
@@ -30,10 +29,10 @@ namespace MWInstaller
 
         private void fileList_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            if(e.AddedItems.Count == 1)
+            if(nexusAPIURL != null && e.AddedItems.Count == 1)
             {
                 NexusFiles files = e.AddedItems[0] as NexusFiles;
-                apiURL.Text = nexusAPIURL + "/files/" + files.file_id + "/download_link";
+                apiURL.Text = string.Format("{0}/files/{1}/download_link", nexusAPIURL, files.file_id);
             }
         }
 

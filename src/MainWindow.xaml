@@ -31,13 +31,13 @@
             </TabItem>
             <TabItem Header="Configuration">
                 <Grid Background="#FFE5E5E5">
-                    <TextBox x:Name="packageListLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="532" TextChanged="packageListLocationTextbox_TextChanged"/>
+                    <TextBox x:Name="packageListLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,10,0,0" VerticalAlignment="Top" Width="532" TextChanged="packageListLocationTextbox_TextChanged"/>
                     <Button x:Name="packageListLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,10,0,0" VerticalAlignment="Top" Width="75" Click="packageListLocationButton_Click"/>
-                    <TextBox x:Name="morrowindLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,41,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="532" TextChanged="morrowindLocationTextbox_TextChanged"/>
+                    <TextBox x:Name="morrowindLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,41,0,0" VerticalAlignment="Top" Width="532" TextChanged="morrowindLocationTextbox_TextChanged"/>
                     <Button x:Name="morrowindLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,41,0,0" VerticalAlignment="Top" Width="75" Click="morrowindLocationButton_Click"/>
-                    <TextBox x:Name="sevenZipLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,72,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="532" TextChanged="sevenZipLocationTextbox_TextChanged"/>
+                    <TextBox x:Name="sevenZipLocationTextbox" HorizontalAlignment="Left" Height="23" Margin="162,72,0,0" VerticalAlignment="Top" Width="532" TextChanged="sevenZipLocationTextbox_TextChanged"/>
                     <Button x:Name="sevenZipLocationButton" Content="Browse" HorizontalAlignment="Left" Margin="699,72,0,0" VerticalAlignment="Top" Width="75" Click="sevenZipLocationButton_Click"/>
-                    <TextBox x:Name="nexusAPIKeyTextBox" HorizontalAlignment="Left" Height="23" Margin="125,356,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="569" TextChanged="nexusAPIKeyTextBox_TextChanged"/>
+                    <TextBox x:Name="nexusAPIKeyTextBox" HorizontalAlignment="Left" Height="23" Margin="125,356,0,0" VerticalAlignment="Top" Width="569" TextChanged="nexusAPIKeyTextBox_TextChanged"/>
                     <Button x:Name="nexusAPIKeyButton" Content="Open Nexus" HorizontalAlignment="Left" Margin="699,336,0,0" VerticalAlignment="Top" Width="75" Height="44" Click="nexusAPIKeyButton_Click"/>
                     <Label x:Name="nexusAPIKeyWarning" Content="Your API key doesn't appear to be valid. Please double check, and generate a new one if necessary." HorizontalAlignment="Left" Margin="140,325,0,0" VerticalAlignment="Top" Width="554"/>
                     <Image x:Name="nexusSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,355,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>

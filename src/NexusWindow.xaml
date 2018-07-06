@@ -17,10 +17,10 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <TextBox x:Name="inputURL" HorizontalAlignment="Left" Height="23" Margin="80,12,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="697" TextChanged="inputURL_TextChanged"/>
+        <TextBox x:Name="inputURL" HorizontalAlignment="Left" Height="23" Margin="80,12,0,0" VerticalAlignment="Top" Width="697" TextChanged="inputURL_TextChanged"/>
         <Label x:Name="label" Content="Input URL:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
         <Button x:Name="getURL" Content="Get File List" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="102" Height="38" Click="getURL_Click" IsEnabled="False"/>
-        <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="424" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
+        <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" VerticalAlignment="Top" Width="424" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
         <Label x:Name="label_Copy" Content="API Download URL:" HorizontalAlignment="Left" Margin="117,46,0,0" VerticalAlignment="Top"/>
         <Button x:Name="clipboard" Content="Copy to Clipboard" HorizontalAlignment="Left" Margin="663,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="clipboard_Click" IsEnabled="False"/>
 

@@ -16,6 +16,7 @@ namespace MWInstaller
         {
             InitializeComponent();
 
+            Config.LoadConfig();
             PrefillConfiguration();
 
             Installer.startEvent += installerStart;
@@ -25,12 +26,10 @@ namespace MWInstaller
 
         private void PrefillConfiguration()
         {
-            morrowindLocationTextbox.Text = Morrowind.GetInstallLocation();
-            Morrowind.morrowindPath = morrowindLocationTextbox.Text;
-            sevenZipLocationTextbox.Text = Extraction.GetInstallLocation();
-            Extraction.sevenZipPath = sevenZipLocationTextbox.Text;
-            packageListLocationTextbox.Text = Path.Combine(morrowindLocationTextbox.Text, "packageList.json");
-            nexusAPIKeyTextBox.Text = "MjZnTzBFOUxYa0ZDVS9HYU1iekQwZmNQUUhmSkl1bGFWWGw2eFc3dTRPNDNzYXlKUUxkWWt5N25BdHU4UFZqbHptMXlnTit3Y0VHbmVVN1U3cGRHSUE9PS0tQlhrNll3d0VVa0RpR2p4OVBLUFlwZz09--d2fe47ee2a83d880d5279591311394bdaabbd8ad";
+            morrowindLocationTextbox.Text = Morrowind.morrowindPath;
+            sevenZipLocationTextbox.Text = Extraction.sevenZipPath;
+            packageListLocationTextbox.Text = Config.packageListPath;
+            nexusAPIKeyTextBox.Text = Nexus.apiKey;
             nexusAPIKeyButton_Click(null, null);
         }
 
