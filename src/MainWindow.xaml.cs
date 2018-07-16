@@ -12,9 +12,14 @@ namespace MWInstaller
         PackageList packageList;
         List<Package> packages;
 
+        NexusWindow nexusWindow;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            Log.Clear();
+            Log.Write("MW Installer started.\n");
 
             Config.LoadConfig();
             PrefillConfiguration();
@@ -30,7 +35,11 @@ namespace MWInstaller
             sevenZipLocationTextbox.Text = Extraction.sevenZipPath;
             packageListLocationTextbox.Text = Config.packageListPath;
             nexusAPIKeyTextBox.Text = Nexus.apiKey;
-            nexusAPIKeyButton_Click(null, null);
+
+            if(nexusAPIKeyTextBox.Text.Length > 0)
+            {
+                nexusAPIKeyButton_Click(null, null);
+            }
         }
 
         private void nexusAPIKeyTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -46,9 +55,19 @@ namespace MWInstaller
             if(nexusAPIKeyTextBox.Text.Length > 0)
             {
                 if(Nexus.ValidateAPIKey(nexusAPIKeyTextBox.Text))
+                {
                     CheckInstallability();
+                    creatorTab.IsEnabled = true;
+                }
                 else
+                {
                     CheckInstallability(true);
+                    creatorTab.IsEnabled = false;
+                    if(nexusWindow != null)
+                    {
+                        nexusWindow.Close();
+                    }
+                }
             }
             else
             {
@@ -62,6 +81,7 @@ namespace MWInstaller
             if(dialog.ShowDialog(this).GetValueOrDefault())
             {
                 packageListLocationTextbox.Text = dialog.FileName;
+                packageListLocationTextbox_TextChanged(sender, null);
             }
         }
 
@@ -87,31 +107,39 @@ namespace MWInstaller
         private void packageListLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             var listPath = packageListLocationTextbox.Text;
-            if(File.Exists(listPath))
+            PackageListUpdated(listPath);
+        }
+
+        private void PackageListUpdated(string path)
+        {
+            if(File.Exists(path))
             {
-                packageList = PackageList.Deserialize(File.ReadAllText(listPath));
+                packageList = PackageList.Deserialize(File.ReadAllText(path));
+                if(packageList != null)
+                {
+                    packageListTitle.Text = packageList.name;
+                    packageListCurator.Text = string.Format("Curated by: {0}", packageList.curator);
+                    packageListDescription.Text = packageList.description;
+                    packageListUpdated.Text = "Last updated:\n" + packageList.lastUpdated;
+                    packages = packageList.GetPackages();
+                    packagesView.ItemsSource = packages;
+                    packageListSuccessTick.Visibility = Visibility.Visible;
+                    packageTab.IsEnabled = true;
+                    CheckInstallability();
+                    packageListInfo.Text = string.Empty;
+                    return;
+                }
 
-                PackageListUpdated();
-
-                packageListSuccessTick.Visibility = Visibility.Visible;
+                packageListInfo.Text = string.Format("{0} could not be deserialized due to malformed JSON. Check for corruption, or notify the curator.", Path.GetFileName(path));
             }
             else
             {
-                packageListSuccessTick.Visibility = Visibility.Hidden;
+                packageListInfo.Text = "Select a package list to install.";
             }
 
-            CheckInstallability();
-        }
-
-        private void PackageListUpdated()
-        {
-            packageListTitle.Text = packageList.name;
-            packageListCurator.Text = string.Format("Curated by: {0}", packageList.curator);
-            packageListDescription.Text = packageList.description;
-            packageListUpdated.Text = "Last updated:\n" + packageList.lastUpdated;
-            packages = packageList.GetPackages();
-            packagesView.ItemsSource = packages;
-
+            // Path didn't exist, or the package list didn't deserialize properly.
+            packageTab.IsEnabled = false;
+            packageListSuccessTick.Visibility = Visibility.Hidden;
             CheckInstallability();
         }
 
@@ -203,8 +231,20 @@ namespace MWInstaller
 
         private void creatorButton_Click(object sender, RoutedEventArgs e)
         {
-            NexusWindow nexus = new NexusWindow();
-            nexus.Show();
+            nexusWindow = new NexusWindow();
+            nexusWindow.Show();
+        }
+
+        private void packagesView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var p = packagesView.SelectedItem as Package;
+            Log.Write("\n" + p.name + "\n");
+            if(p.malformed)
+            {
+                packages = packageList.GetPackages();
+                packagesView.ItemsSource = packages;
+                packagesView.UpdateLayout();
+            }
         }
     }
 }

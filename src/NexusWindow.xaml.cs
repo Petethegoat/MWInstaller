@@ -18,7 +18,7 @@ namespace MWInstaller
 
         private void getURL_Click(object sender, RoutedEventArgs e)
         {
-            nexusAPIURL = Nexus.NexusURLtoAPI(inputURL.Text);
+            nexusAPIURL = Nexus.NexusURLtoAPI(inputURL.Text.Trim());
             string json = Nexus.GetNexusFileList(nexusAPIURL);
             var list = NexusFileList.Deserialize(json);
             fileList.ItemsSource = list.files;

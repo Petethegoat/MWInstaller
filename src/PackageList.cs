@@ -19,11 +19,20 @@ namespace MWInstaller
         public static PackageList Deserialize(string json)
         {
             var p = new PackageList();
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var serializer = new DataContractJsonSerializer(p.GetType());
-            p = serializer.ReadObject(ms) as PackageList;
-            ms.Close();
-            return p;
+            try
+            {
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+
+                var serializer = new DataContractJsonSerializer(typeof(PackageList));
+                p = serializer.ReadObject(ms) as PackageList;
+                ms.Close();
+                return p;
+            }
+            catch(System.Exception e)
+            {
+                Log.Write(e);
+                return null;
+            }
         }
 
         public List<Package> GetPackages()
@@ -33,7 +42,7 @@ namespace MWInstaller
             var webClient = new WebClient();
             foreach(string s in packages)
             {
-                paks.Add(Package.Deserialize(webClient.DownloadString(s)));
+                paks.Add(Package.Deserialize(s, webClient.DownloadString(s)));
             }
 
             return paks;

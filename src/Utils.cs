@@ -1,9 +1,12 @@
-﻿using System.Text;
+﻿using System.Linq;
+using System.Text;
+using System.Windows;
 
 namespace MWInstaller
 {
     static class Utils
     {
+        // https://www.iandevlin.com/blog/2010/01/csharp/generating-a-relative-path-in-csharp/
         public static string RelativePath(string absolutePath, string relativeTo)
         {
             string[] absoluteDirectories = absolutePath.Split('\\');

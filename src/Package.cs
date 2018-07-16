@@ -18,24 +18,39 @@ namespace MWInstaller
         [DataMember(Name = "specialExtract")] internal Dictionary<string, string> specialExtract;
 
         public bool requiresNexus { get; set; }
+        public bool malformed { get; set; } = false;
         internal string fileName;
+        internal string url;
 
-        public static Package Deserialize(string json)
+        public static Package Deserialize(string url, string json)
         {
             var p = new Package();
-            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
-            var settings = new DataContractJsonSerializerSettings();
-            settings.UseSimpleDictionaryFormat = true;
-            var serializer = new DataContractJsonSerializer(p.GetType(), settings);
-            p = serializer.ReadObject(ms) as Package;
-            ms.Close();
-            p.fileBlacklist = p.fileBlacklist == null ? new string[0] : p.fileBlacklist;
-            p.directoryBlacklist = p.directoryBlacklist == null ? new string[0] : p.directoryBlacklist;
-            p.specialExtract = p.specialExtract == null ? new Dictionary<string, string>(0) : p.specialExtract;
-            p.requiresNexus = p.RequiresNexusAPI();
-            p.fileName = Path.GetFileName(p.fileURL);
+            try
+            {
+                MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+                var settings = new DataContractJsonSerializerSettings
+                {
+                    UseSimpleDictionaryFormat = true
+                };
 
-            return p;
+                var serializer = new DataContractJsonSerializer(typeof(Package), settings);
+                p = serializer.ReadObject(ms) as Package;
+                ms.Close();
+
+                p.fileBlacklist = p.fileBlacklist == null ? new string[0] : p.fileBlacklist;
+                p.directoryBlacklist = p.directoryBlacklist == null ? new string[0] : p.directoryBlacklist;
+                p.specialExtract = p.specialExtract == null ? new Dictionary<string, string>(0) : p.specialExtract;
+                p.requiresNexus = p.RequiresNexusAPI();
+                p.fileName = Path.GetFileName(p.fileURL);
+                p.url = url;
+
+                return p;
+            }
+            catch(System.Exception e)
+            {
+                Log.Write(e);
+                return GetErrorPackage(Path.GetFileName(url));
+            }
         }
 
         private bool RequiresNexusAPI()
@@ -44,6 +59,15 @@ namespace MWInstaller
                 return true;
 
             return false;
+        }
+
+        private static Package GetErrorPackage(string url)
+        {
+            var p = new Package();
+            p.name = "Malformed JSON in: " + url;
+            p.url = url;
+            p.malformed = true;
+            return p;
         }
     }
 }

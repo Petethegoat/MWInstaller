@@ -76,6 +76,7 @@
     <Compile Include="src\Config.cs" />
     <Compile Include="src\Extraction.cs" />
     <Compile Include="src\Installer.cs" />
+    <Compile Include="src\Logging.cs" />
     <Compile Include="src\Morrowind.cs" />
     <Compile Include="src\Nexus.cs" />
     <Compile Include="src\NexusWindow.xaml.cs">
