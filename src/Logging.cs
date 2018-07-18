@@ -19,7 +19,6 @@ namespace MWInstaller
 
         public static void Write(System.Exception e)
         {
-            //string log = string.Format(e.)
             File.AppendAllText(logPath, string.Format("\nEXCEPTION:\n{0}{1}", e.StackTrace, e.Message), System.Text.Encoding.UTF8);
         }
     }

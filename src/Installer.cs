@@ -10,54 +10,92 @@ namespace MWInstaller
 {
     static class Installer
     {
-        public static BackgroundWorker worker = new BackgroundWorker();
-        public static event EventHandler startEvent;
-        public static event EventHandler completeEvent;
-        public static event EventHandler<int> progressEvent;
+        private const int progressChunksPerPackage = 4;
 
-        public static void PerformInstall(List<Package> paks, PackageList list)
+        public static event EventHandler StartEvent;
+        public static event EventHandler<bool> CompleteEvent;
+        public static event EventHandler<object[]> ProgressEvent;
+
+        public static BackgroundWorker worker = new BackgroundWorker
         {
-            if(worker.IsBusy)
-                return;
+            WorkerReportsProgress = true,
+            WorkerSupportsCancellation = true
+        };
 
-            worker.WorkerReportsProgress = true;
-            worker.WorkerSupportsCancellation = true;
-
-            startEvent.Invoke(null, null);
-
+        public static void Initialize()
+        {
             worker.DoWork += delegate (object s, DoWorkEventArgs args)
             {
-                DeleteTempFiles(list);
+                List<Package> paks = (List<Package>)args.Argument;
+
+                CleanUpTempFiles(paks[0].list);  //TODO
+                worker.ReportProgress(0, "Downloading package...");
 
                 foreach(Package pak in paks)
                 {
+                    float progressChunk = ((paks.IndexOf(pak) + 1) * 4);
+                    System.Threading.Thread.Sleep(10);
                     DownloadPackage(pak);
-                    Unpack(pak, list);
+                    worker.ReportProgress((int)progressChunk - 3, "Unpacking archive...");
+                    System.Threading.Thread.Sleep(10);
+                    Unpack(pak);
+                    worker.ReportProgress((int)progressChunk - 2, "Installing package...");
+                    System.Threading.Thread.Sleep(10);
+                    InstallPackage(pak);
+                    worker.ReportProgress((int)progressChunk - 1, "Cleaning up...");
+                    System.Threading.Thread.Sleep(10);
                     DeleteArchive(pak);
-                    InstallPackage(pak, list);
-                    worker.ReportProgress(paks.IndexOf(pak) + 1);
+                    worker.ReportProgress((int)progressChunk, "Downloading package...");
                 }
+
+                worker.ReportProgress(GetProgressBarLength(paks.Count), "Done!");
             };
 
             worker.ProgressChanged += delegate (object s, ProgressChangedEventArgs args)
             {
-                progressEvent.Invoke(null, args.ProgressPercentage);
+                ProgressEvent.Invoke(null, new object[] { args.ProgressPercentage, args.UserState });
             };
 
             worker.RunWorkerCompleted += delegate (object s, RunWorkerCompletedEventArgs args)
             {
-                completeEvent.Invoke(null, null);
-            };
+                if(args.Error != null)
+                {
+                    Log.Write(args.Error);
+                    CompleteEvent.Invoke(null, false);
+                    return;
+                }
+                else
+                {
+                    CompleteEvent.Invoke(null, true);
+                }
 
-            worker.RunWorkerAsync();
+            };
+        }
+
+        public static void PerformInstall(List<Package> paks)
+        {
+            if(paks == null || paks.Count < 1)
+            {
+                Log.Write("List<Package> is null or empty.");
+                return;
+            }
+            if(worker.IsBusy)
+            {
+                Log.Write("Tried to start install while install was in progress.");
+                return;
+            }
+
+            StartEvent.Invoke(null, null);
+            worker.RunWorkerAsync(paks);
         }
 
 
 
-        private static void DeleteTempFiles(PackageList list)
+        private static void CleanUpTempFiles(PackageList list)
         {
             var destination = Path.Combine(Path.GetTempPath(), list.name);
-            Directory.Delete(destination, true);
+            if(Directory.Exists(destination))
+                Directory.Delete(destination, true);
         }
 
         private static void DownloadPackage(Package pak)
@@ -71,15 +109,15 @@ namespace MWInstaller
             webClient.DownloadFile(url, pak.fileName);
         }
 
-        private static void Unpack(Package pak, PackageList list)
+        private static void Unpack(Package pak)
         {
-            var destination = Path.Combine(Path.GetTempPath(), list.name, pak.name);
+            var destination = Path.Combine(Path.GetTempPath(), pak.list.name, pak.name);
             Extraction.Extract(pak, destination);
         }
 
-        private static void InstallPackage(Package pak, PackageList list)
+        private static void InstallPackage(Package pak)
         {
-            var packagePath = Path.Combine(Path.GetTempPath(), list.name, pak.name);
+            var packagePath = Path.Combine(Path.GetTempPath(), pak.list.name, pak.name);
             DirectoryInfo d = new DirectoryInfo(packagePath);
 
             foreach(FileInfo f in d.GetFiles("*", SearchOption.AllDirectories))
@@ -204,6 +242,11 @@ namespace MWInstaller
         private static string Fix(this string path)
         {
             return path.ToLower().Replace("\\", "/");
+        }
+
+        public static int GetProgressBarLength(int length)
+        {
+            return length * progressChunksPerPackage;
         }
     }
 }

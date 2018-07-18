@@ -42,7 +42,15 @@ namespace MWInstaller
             var webClient = new WebClient();
             foreach(string s in packages)
             {
-                paks.Add(Package.Deserialize(s, webClient.DownloadString(s)));
+                try
+                {
+                    paks.Add(Package.Deserialize(s, webClient.DownloadString(s), this));
+                }
+                catch(System.Exception e)
+                {
+                    Log.Write(e);
+                    return null;
+                }
             }
 
             return paks;

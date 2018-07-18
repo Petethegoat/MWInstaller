@@ -31,8 +31,9 @@ namespace MWInstaller
                     return true;
                 }
             }
-            catch
+            catch(System.Exception e)
             {
+                Log.Write(e);
                 return false;
             }
         }

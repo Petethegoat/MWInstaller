@@ -21,12 +21,13 @@ namespace MWInstaller
             Log.Clear();
             Log.Write("MW Installer started.\n");
 
+            Installer.Initialize();
             Config.LoadConfig();
             PrefillConfiguration();
 
-            Installer.startEvent += installerStart;
-            Installer.completeEvent += installerComplete;
-            Installer.progressEvent += updateProgressBar;
+            Installer.StartEvent += installerStart;
+            Installer.CompleteEvent += installerComplete;
+            Installer.ProgressEvent += updateProgressBar;
 
             if(!Config.hideStartupWarning)
                 MessageBox.Show("MW Installer is a work in progress. It should only be used on a fresh, clean installation of Morrowind.");
@@ -110,8 +111,8 @@ namespace MWInstaller
 
         private void packageListLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            var listPath = packageListLocationTextbox.Text;
-            PackageListUpdated(listPath);
+            Config.packageListPath = packageListLocationTextbox.Text;
+            PackageListUpdated(Config.packageListPath);
         }
 
         private void PackageListUpdated(string path)
@@ -121,22 +122,32 @@ namespace MWInstaller
                 packageList = PackageList.Deserialize(File.ReadAllText(path));
                 if(packageList != null)
                 {
-                    packageListTitle.Text = packageList.name;
-                    packageListCurator.Text = string.Format("Curated by: {0}", packageList.curator);
-                    packageListDescription.Text = packageList.description;
-                    packageListUpdated.Text = "Last updated:\n" + packageList.lastUpdated;
                     packages = packageList.GetPackages();
-                    packagesView.ItemsSource = packages;
-                    packageListSuccessTick.Visibility = Visibility.Visible;
-                    packageListRefresh.Visibility = Visibility.Hidden;
-                    packageTab.IsEnabled = true;
-                    CheckInstallability();
-                    packageListInfo.Text = string.Empty;
-                    return;
+                    if(packages != null)
+                    {
+                        packageListTitle.Text = packageList.name;
+                        packageListCurator.Text = string.Format("Curated by: {0}", packageList.curator);
+                        packageListDescription.Text = packageList.description;
+                        packageListUpdated.Text = "Last updated:\n" + packageList.lastUpdated;
+                        packagesView.ItemsSource = packages;
+                        packageListSuccessTick.Visibility = Visibility.Visible;
+                        packageListRefresh.Visibility = Visibility.Hidden;
+                        packageTab.IsEnabled = true;
+                        CheckInstallability();
+                        packageListInfo.Text = string.Empty;
+                        return;
+                    }
+                    else
+                    {
+                        packageListRefresh.Visibility = Visibility.Visible;
+                        packageListInfo.Text = string.Format("{0} could not be deserialized due to bad package URLs. Double check the paths, or notify the curator.", Path.GetFileName(path));
+                    }
                 }
-
-                packageListRefresh.Visibility = Visibility.Visible;
-                packageListInfo.Text = string.Format("{0} could not be deserialized due to malformed JSON. Check for corruption, or notify the curator.", Path.GetFileName(path));
+                else
+                {
+                    packageListRefresh.Visibility = Visibility.Visible;
+                    packageListInfo.Text = string.Format("{0} could not be deserialized due to malformed JSON. Check for corruption, or notify the curator.", Path.GetFileName(path));
+                }
             }
             else
             {
@@ -191,25 +202,35 @@ namespace MWInstaller
 
         private void installButton_Click(object sender, RoutedEventArgs e)
         {
-            installProgress.Maximum = packageList.packages.Length;
-            Installer.PerformInstall(packages, packageList);
+            installProgress.Maximum = Installer.GetProgressBarLength(packages.Count);
+            Installer.PerformInstall(packages);
         }
 
-        private void updateProgressBar(object sender, int percentage)
+        private void updateProgressBar(object sender, object[] args)
         {
-            installProgress.Value = percentage;
+            installProgress.Value = (int) args[0];
+            installTask.Content = (string)args[1];
         }
 
         private void installerStart(object sender, System.EventArgs e)
         {
             installButton.IsEnabled = false;
+            mainWindow.IsEnabled = false;
         }
 
-        private void installerComplete(object sender, System.EventArgs e)
+        private void installerComplete(object sender, bool success)
         {
-            installReadyImage.Visibility = Visibility.Hidden;
+            string message;
+            if(success)
+                message = "Installation complete.";
+            else
+                message = "An exception occured. Please check mwinstaller.log for details.";
 
-            MessageBox.Show("Installation complete.");
+            if(MessageBox.Show(message) == MessageBoxResult.OK)
+            {
+                mainWindow.IsEnabled = true;
+                installReadyImage.Visibility = Visibility.Hidden;
+            }
         }
 
         private void sevenZipLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)

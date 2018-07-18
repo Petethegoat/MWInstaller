@@ -1,4 +1,4 @@
-﻿<Window x:Class="MWInstaller.MainWindow"
+﻿<Window x:Name="mainWindow" x:Class="MWInstaller.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,7 +10,7 @@
         <TabControl x:Name="tabControl" SelectedIndex="1">
             <TabItem x:Name="packageTab" Header="Packages" IsEnabled="False">
                 <Grid Background="#FFE5E5E5">
-                    <ListView x:Name="packagesView" HorizontalAlignment="Left" Height="303" Margin="10,52,0,0" VerticalAlignment="Top" Width="612" MouseDoubleClick="packagesView_MouseDoubleClick">
+                    <ListView x:Name="packagesView" HorizontalAlignment="Left" Height="291" Margin="10,52,0,0" VerticalAlignment="Top" Width="612" MouseDoubleClick="packagesView_MouseDoubleClick">
                         <ListView.View>
                             <GridView AllowsColumnReorder="False">
                                 <GridViewColumn Header="Name" DisplayMemberBinding="{Binding Path=name}" Width="368"/>
@@ -37,6 +37,7 @@
                     <ProgressBar x:Name="installProgress" HorizontalAlignment="Left" Height="20" Margin="10,360,0,0" VerticalAlignment="Top" Width="612"/>
                     <Image x:Name="installReadyImage" HorizontalAlignment="Left" Height="147" Margin="627,201,0,0" VerticalAlignment="Top" Width="147" Source="/MWInstaller;component/res/icon.ico"/>
                     <TextBlock x:Name="packageListUpdated" HorizontalAlignment="Left" Margin="627,52,0,0" TextWrapping="Wrap" Text="Last updated:" VerticalAlignment="Top" Height="64" Width="147" FontSize="14"/>
+                    <Label x:Name="installTask" Content="" HorizontalAlignment="Left" Margin="5,338,0,0" VerticalAlignment="Top" Width="256"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Configuration">
@@ -72,7 +73,7 @@
             <TabItem Header="About">
                 <Grid Background="#FFE5E5E5">
                     <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="80" Width="764"><Run Text="Thank"/><Run Text="s for trying MW Installer. This is a work in progress, and it's far from finished. You can contribute, or just follow along on G"/><Run Text="ithub below."/></TextBlock>
-                    <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="MW Installer 0.2" VerticalAlignment="Top" Width="382"/>
+                    <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="MW Installer 0.3" VerticalAlignment="Top" Width="382"/>
                     <Button x:Name="githubButton" Content="Github" HorizontalAlignment="Left" Margin="646,358,0,0" VerticalAlignment="Top" Width="128" Click="githubButton_Click"/>
                     <Button x:Name="openLog" Content="Open Debug Log" HorizontalAlignment="Left" Margin="646,331,0,0" VerticalAlignment="Top" Width="128" Click="openLog_Click"/>
                     <CheckBox x:Name="hideStartupWarning" Content="Hide Startup Warning" HorizontalAlignment="Left" Margin="10,95,0,0" VerticalAlignment="Top" Checked="hideStartupWarning_Changed" Unchecked="hideStartupWarning_Changed"/>

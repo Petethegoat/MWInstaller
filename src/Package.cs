@@ -21,8 +21,9 @@ namespace MWInstaller
         public bool malformed { get; set; } = false;
         internal string fileName;
         internal string url;
+        internal PackageList list;
 
-        public static Package Deserialize(string url, string json)
+        public static Package Deserialize(string url, string json, PackageList list)
         {
             var p = new Package();
             try
@@ -43,6 +44,7 @@ namespace MWInstaller
                 p.requiresNexus = p.RequiresNexusAPI();
                 p.fileName = Path.GetFileName(p.fileURL);
                 p.url = url;
+                p.list = list;  //TODO
 
                 return p;
             }
