@@ -5,7 +5,7 @@ namespace MWInstaller
 {
     class Log
     {
-        const string logPath = "mwinstaller.log";
+        public const string logPath = "mwinstaller.log";
 
         public static void Clear()
         {

@@ -27,6 +27,9 @@ namespace MWInstaller
             Installer.startEvent += installerStart;
             Installer.completeEvent += installerComplete;
             Installer.progressEvent += updateProgressBar;
+
+            if(!Config.hideStartupWarning)
+                MessageBox.Show("MW Installer is a work in progress. It should only be used on a fresh, clean installation of Morrowind.");
         }
 
         private void PrefillConfiguration()
@@ -35,6 +38,7 @@ namespace MWInstaller
             sevenZipLocationTextbox.Text = Extraction.sevenZipPath;
             packageListLocationTextbox.Text = Config.packageListPath;
             nexusAPIKeyTextBox.Text = Nexus.apiKey;
+            hideStartupWarning.IsChecked = Config.hideStartupWarning;
 
             if(nexusAPIKeyTextBox.Text.Length > 0)
             {
@@ -124,16 +128,19 @@ namespace MWInstaller
                     packages = packageList.GetPackages();
                     packagesView.ItemsSource = packages;
                     packageListSuccessTick.Visibility = Visibility.Visible;
+                    packageListRefresh.Visibility = Visibility.Hidden;
                     packageTab.IsEnabled = true;
                     CheckInstallability();
                     packageListInfo.Text = string.Empty;
                     return;
                 }
 
+                packageListRefresh.Visibility = Visibility.Visible;
                 packageListInfo.Text = string.Format("{0} could not be deserialized due to malformed JSON. Check for corruption, or notify the curator.", Path.GetFileName(path));
             }
             else
             {
+                packageListRefresh.Visibility = Visibility.Hidden;
                 packageListInfo.Text = "Select a package list to install.";
             }
 
@@ -245,6 +252,26 @@ namespace MWInstaller
                 packagesView.ItemsSource = packages;
                 packagesView.UpdateLayout();
             }
+        }
+
+        private void githubButton_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start("https://github.com/Petethegoat/MWInstaller");
+        }
+
+        private void openLog_Click(object sender, RoutedEventArgs e)
+        {
+            System.Diagnostics.Process.Start(Log.logPath);
+        }
+
+        private void packageListRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            packageListLocationTextbox_TextChanged(sender, null);
+        }
+
+        private void hideStartupWarning_Changed(object sender, RoutedEventArgs e)
+        {
+            Config.hideStartupWarning = hideStartupWarning.IsChecked.GetValueOrDefault();
         }
     }
 }

@@ -59,11 +59,24 @@
                     <Image x:Name="morrowindSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,140,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>
                     <Image x:Name="packageListSuccessTick" HorizontalAlignment="Left" Height="24" Margin="10,9,0,0" VerticalAlignment="Top" Width="24" Source="/MWInstaller;component/res/tick-icon.png"/>
                     <TextBlock x:Name="packageListInfo" HorizontalAlignment="Left" Margin="45,38,0,0" TextWrapping="Wrap" Text="Package List Info" VerticalAlignment="Top" Height="32" Width="729"/>
+                    <Button x:Name="packageListRefresh" HorizontalAlignment="Left" Height="28" Margin="10,9,0,0" VerticalAlignment="Top" Width="28" Click="packageListRefresh_Click" BorderThickness="0" Visibility="Hidden">
+                        <Image x:Name="image" Height="24" Width="24" Source="/MWInstaller;component/res/refresh-icon.png" VerticalAlignment="Center" HorizontalAlignment="Center" RenderTransformOrigin="-1.042,2.417"/>
+                    </Button>
                 </Grid>
             </TabItem>
             <TabItem x:Name="creatorTab" Header="Package List Creation" IsEnabled="False">
                 <Grid Background="#FFE5E5E5">
                     <Button x:Name="creatorButton" Content="Nexus Download Link Helper" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="190" Height="48" Click="creatorButton_Click"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="About">
+                <Grid Background="#FFE5E5E5">
+                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="80" Width="764"><Run Text="Thank"/><Run Text="s for trying MW Installer. This is a work in progress, and it's far from finished. You can contribute, or just follow along on G"/><Run Text="ithub below."/></TextBlock>
+                    <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="MW Installer 0.2" VerticalAlignment="Top" Width="382"/>
+                    <Button x:Name="githubButton" Content="Github" HorizontalAlignment="Left" Margin="646,358,0,0" VerticalAlignment="Top" Width="128" Click="githubButton_Click"/>
+                    <Button x:Name="openLog" Content="Open Debug Log" HorizontalAlignment="Left" Margin="646,331,0,0" VerticalAlignment="Top" Width="128" Click="openLog_Click"/>
+                    <CheckBox x:Name="hideStartupWarning" Content="Hide Startup Warning" HorizontalAlignment="Left" Margin="10,95,0,0" VerticalAlignment="Top" Checked="hideStartupWarning_Changed" Unchecked="hideStartupWarning_Changed"/>
+
                 </Grid>
             </TabItem>
         </TabControl>

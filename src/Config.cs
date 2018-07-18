@@ -8,11 +8,13 @@ namespace MWInstaller
     public class Config
     {
         static public string packageListPath;
+        static public bool hideStartupWarning;
 
         const string K_morrowindPath = "morrowindPath";
         const string K_packageListPath = "packageListPath";
         const string K_sevenZipPath = "sevenZipPath";
         const string K_nexusAPIKey = "nexusAPIKey";
+        const string K_hideStartupWarning = "hideStartupWarning";
 
         private const string registry = "SOFTWARE\\MWInstaller";
 
@@ -22,6 +24,7 @@ namespace MWInstaller
             SetRegistryValue(K_packageListPath, Config.packageListPath);
             SetRegistryValue(K_sevenZipPath, Extraction.sevenZipPath);
             SetRegistryValue(K_nexusAPIKey, Nexus.apiKey);
+            SetRegistryValue(K_hideStartupWarning, Config.hideStartupWarning.ToString());
         }
 
         public static void LoadConfig()
@@ -38,6 +41,8 @@ namespace MWInstaller
 
             reg = GetRegistryValue(K_nexusAPIKey);
             Nexus.apiKey = reg;
+
+            Config.hideStartupWarning = GetRegistryBool(K_hideStartupWarning);
         }
 
         private static string GetRegistryValue(string key)
@@ -51,6 +56,19 @@ namespace MWInstaller
                     return o.ToString();
             }
             return "";
+        }
+
+        private static bool GetRegistryBool(string key)
+        {
+            RegistryKey rk = Registry.CurrentUser.CreateSubKey(registry);
+            rk = Registry.CurrentUser.OpenSubKey(registry, false);
+            if(rk != null)
+            {
+                object o = rk.GetValue(key);
+                if(o != null)
+                    return bool.Parse(o.ToString());
+            }
+            return false;
         }
 
         private static void SetRegistryValue(string key, string value)
