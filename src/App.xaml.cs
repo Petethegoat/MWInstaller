@@ -16,7 +16,7 @@ namespace MWInstaller
         private void Application_Exit(object sender, ExitEventArgs e)
         {
             Config.SaveConfig();
-            Log.Write("\nSaving config and closing MW Installer.");
+            Log.Write("\nClosing MW Installer.");
         }
     }
 }

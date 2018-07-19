@@ -20,15 +20,18 @@ namespace MWInstaller
 
         public static void SaveConfig()
         {
+            Log.Write("\nSaving config...");
             SetRegistryValue(K_morrowindPath, Morrowind.morrowindPath);
             SetRegistryValue(K_packageListPath, Config.packageListPath);
             SetRegistryValue(K_sevenZipPath, Extraction.sevenZipPath);
             SetRegistryValue(K_nexusAPIKey, Nexus.apiKey);
             SetRegistryValue(K_hideStartupWarning, Config.hideStartupWarning.ToString());
+            Log.Write(" done.");
         }
 
         public static void LoadConfig()
         {
+            Log.Write("\nLoading config...");
             string reg;
             reg = GetRegistryValue(K_morrowindPath);
             Morrowind.morrowindPath = reg == "" ? Morrowind.GetInstallLocation() : reg;
@@ -43,6 +46,7 @@ namespace MWInstaller
             Nexus.apiKey = reg;
 
             Config.hideStartupWarning = GetRegistryBool(K_hideStartupWarning);
+            Log.Write(" done.");
         }
 
         private static string GetRegistryValue(string key)
