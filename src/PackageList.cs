@@ -10,11 +10,11 @@ namespace MWInstaller
     [DataContract]
     internal class PackageList
     {
-        [DataMember] internal string name;
-        [DataMember] internal string curator;
+        [DataMember(IsRequired = true)] internal string name;
+        [DataMember(IsRequired = true)] internal string curator;
         [DataMember] internal string lastUpdated;
         [DataMember] internal string description;
-        [DataMember] internal string[] packages;
+        [DataMember(IsRequired = true)] internal string[] packages;
 
         public static PackageList Deserialize(string json)
         {

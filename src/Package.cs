@@ -9,9 +9,9 @@ namespace MWInstaller
     [DataContract]
     internal class Package
     {
-        [DataMember] public string name { get; set; }
-        [DataMember] public string author { get; set; }
-        [DataMember] internal string fileURL;
+        [DataMember(IsRequired = true)] public string name { get; set; }
+        [DataMember(IsRequired = true)] public string author { get; set; }
+        [DataMember(IsRequired = true)] internal string fileURL;
         [DataMember] internal string filterWhitelist;
         [DataMember] internal string[] fileBlacklist;
         [DataMember] internal string[] directoryBlacklist;

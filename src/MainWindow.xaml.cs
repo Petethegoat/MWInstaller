@@ -12,8 +12,6 @@ namespace MWInstaller
         PackageList packageList;
         List<Package> packages;
 
-        NexusWindow nexusWindow;
-
         public MainWindow()
         {
             InitializeComponent();
@@ -45,74 +43,6 @@ namespace MWInstaller
             {
                 nexusAPIKeyButton_Click(null, null);
             }
-        }
-
-        private void nexusAPIKeyTextBox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            if(nexusAPIKeyTextBox.Text.Length > 0)
-                nexusAPIKeyButton.Content = "Validate";
-            else
-                nexusAPIKeyButton.Content = "Open Nexus";
-        }
-
-        private void nexusAPIKeyButton_Click(object sender, RoutedEventArgs e)
-        {
-            if(nexusAPIKeyTextBox.Text.Length > 0)
-            {
-                if(Nexus.ValidateAPIKey(nexusAPIKeyTextBox.Text))
-                {
-                    CheckInstallability();
-                    creatorTab.IsEnabled = true;
-                }
-                else
-                {
-                    CheckInstallability(true);
-                    creatorTab.IsEnabled = false;
-                    if(nexusWindow != null)
-                    {
-                        nexusWindow.Close();
-                    }
-                }
-            }
-            else
-            {
-                System.Diagnostics.Process.Start("https://www.nexusmods.com/users/myaccount?tab=api+access");
-            }
-        }
-
-        private void packageListLocationButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Ookii.Dialogs.Wpf.VistaOpenFileDialog();
-            if(dialog.ShowDialog(this).GetValueOrDefault())
-            {
-                packageListLocationTextbox.Text = dialog.FileName;
-                packageListLocationTextbox_TextChanged(sender, null);
-            }
-        }
-
-        private void morrowindLocationButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if(dialog.ShowDialog(this).GetValueOrDefault())
-            {
-                morrowindLocationTextbox.Text = dialog.SelectedPath;
-            }
-        }
-
-        private void sevenZipLocationButton_Click(object sender, RoutedEventArgs e)
-        {
-            var dialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if(dialog.ShowDialog(this).GetValueOrDefault())
-            {
-                sevenZipLocationTextbox.Text = dialog.SelectedPath;
-                Extraction.sevenZipPath = dialog.SelectedPath;
-            }
-        }
-
-        private void packageListLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            Config.packageListPath = packageListLocationTextbox.Text;
-            PackageListUpdated(Config.packageListPath);
         }
 
         private void PackageListUpdated(string path)
@@ -198,101 +128,6 @@ namespace MWInstaller
 
             installButton.IsEnabled = !nexusWarnings && readyForInstall;
             installReadyImage.Visibility = !nexusWarnings && readyForInstall ? Visibility.Visible : Visibility.Hidden;
-        }
-
-        private void installButton_Click(object sender, RoutedEventArgs e)
-        {
-            installProgress.Maximum = Installer.GetProgressBarLength(packages.Count);
-            Installer.PerformInstall(packages);
-        }
-
-        private void updateProgressBar(object sender, object[] args)
-        {
-            installProgress.Value = (int) args[0];
-            installTask.Content = (string)args[1];
-        }
-
-        private void installerStart(object sender, System.EventArgs e)
-        {
-            installButton.IsEnabled = false;
-            mainWindow.IsEnabled = false;
-        }
-
-        private void installerComplete(object sender, bool success)
-        {
-            string message;
-            if(success)
-                message = "Installation complete.";
-            else
-                message = "An exception occured. Please check mwinstaller.log for details.";
-
-            if(MessageBox.Show(message) == MessageBoxResult.OK)
-            {
-                mainWindow.IsEnabled = true;
-                installReadyImage.Visibility = Visibility.Hidden;
-            }
-        }
-
-        private void sevenZipLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            Extraction.sevenZipPath = sevenZipLocationTextbox.Text;
-
-            if(Extraction.CheckLocation(Extraction.sevenZipPath))
-                sevenZipSuccessTick.Visibility = Visibility.Visible;
-            else
-                sevenZipSuccessTick.Visibility = Visibility.Hidden;
-
-            CheckInstallability();
-        }
-
-        private void morrowindLocationTextbox_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {
-            Morrowind.morrowindPath = morrowindLocationTextbox.Text;
-
-            if(Morrowind.CheckLocation(Morrowind.morrowindPath))
-                morrowindSuccessTick.Visibility = Visibility.Visible;
-            else
-                morrowindSuccessTick.Visibility = Visibility.Hidden;
-
-            CheckInstallability();
-        }
-
-        private void creatorButton_Click(object sender, RoutedEventArgs e)
-        {
-            nexusWindow = new NexusWindow();
-            nexusWindow.Show();
-        }
-
-        private void packagesView_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            var p = packagesView.SelectedItem as Package;
-            Log.Write("\n" + p.name + "\n");
-            if(p.malformed)
-            {
-                packages = packageList.GetPackages();
-                packagesView.ItemsSource = packages;
-                packagesView.UpdateLayout();
-            }
-        }
-
-        private void githubButton_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start("https://github.com/Petethegoat/MWInstaller");
-        }
-
-        private void openLog_Click(object sender, RoutedEventArgs e)
-        {
-            System.Diagnostics.Process.Start(Log.logPath);
-        }
-
-        private void packageListRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            packageListLocationTextbox_TextChanged(sender, null);
-        }
-
-        private void hideStartupWarning_Changed(object sender, RoutedEventArgs e)
-        {
-            Config.hideStartupWarning = hideStartupWarning.IsChecked.GetValueOrDefault();
         }
     }
 }

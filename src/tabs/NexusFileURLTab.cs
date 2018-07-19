@@ -4,17 +4,9 @@ using System.Windows.Data;
 
 namespace MWInstaller
 {
-    /// <summary>
-    /// Interaction logic for NexusWindow.xaml
-    /// </summary>
-    public partial class NexusWindow : Window
+    public partial class MainWindow : Window
     {
         string nexusAPIURL;
-
-        public NexusWindow()
-        {
-            InitializeComponent();
-        }
 
         private void getURL_Click(object sender, RoutedEventArgs e)
         {
