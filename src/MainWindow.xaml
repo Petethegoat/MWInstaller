@@ -7,8 +7,8 @@
         mc:Ignorable="d"
         Title="MW Installer" Height="450" Width="800" Icon="/MWInstaller;component/res/icon.ico" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Grid>
-        <TabControl x:Name="tabControl" SelectedIndex="1">
-            <TabItem x:Name="packageTab" Header="Install" IsEnabled="False">
+        <TabControl x:Name="tabControl" SelectedIndex="1" SelectionChanged="tabControl_SelectionChanged">
+            <TabItem x:Name="installTab" Header="Install" IsEnabled="False">
                 <Grid Background="#FFE5E5E5">
                     <ListView x:Name="packagesView" HorizontalAlignment="Left" Height="291" Margin="10,52,0,0" VerticalAlignment="Top" Width="612" MouseDoubleClick="packagesView_MouseDoubleClick">
                         <ListView.View>
@@ -37,7 +37,30 @@
                     <ProgressBar x:Name="installProgress" HorizontalAlignment="Left" Height="20" Margin="10,360,0,0" VerticalAlignment="Top" Width="612"/>
                     <Image x:Name="installReadyImage" HorizontalAlignment="Left" Height="147" Margin="627,201,0,0" VerticalAlignment="Top" Width="147" Source="/MWInstaller;component/res/icon.ico"/>
                     <TextBlock x:Name="packageListUpdated" HorizontalAlignment="Left" Margin="627,52,0,0" TextWrapping="Wrap" Text="Last updated:" VerticalAlignment="Top" Height="64" Width="147" FontSize="14"/>
-                    <Label x:Name="installTask" Content="" HorizontalAlignment="Left" Margin="5,338,0,0" VerticalAlignment="Top" Width="256"/>
+                    <Label x:Name="installTask" Content="" HorizontalAlignment="Left" Margin="5,338,0,0" VerticalAlignment="Top" Width="617"/>
+                    <Border x:Name="installPopup" BorderThickness="1" HorizontalAlignment="Left" Height="124" Margin="344,201,0,0" VerticalAlignment="Top" Width="430" Visibility="Hidden">
+                        <Grid>
+                            <Rectangle Stroke="#FF828790" RadiusY="4" RadiusX="4" />
+                            <Rectangle Width="36" Height="36" Margin="228,102,54,-16" RenderTransformOrigin="0.5,0.5" Fill="#FF828790" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="45"/>
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                            <Rectangle Width="36" Height="36" Margin="228,101,54,-15" RenderTransformOrigin="0.5,0.5" Fill="WhiteSmoke" HorizontalAlignment="Right" VerticalAlignment="Bottom" >
+                                <Rectangle.RenderTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="45"/>
+                                    </TransformGroup>
+                                </Rectangle.RenderTransform>
+                            </Rectangle>
+                            <Rectangle Fill="WhiteSmoke" Stroke="#01FFFFFF" RadiusY="4" RadiusX="4"/>
+                            <Button x:Name="buttonFullInstall" Content="Full Install" Height="48" Margin="0,0,10,10" VerticalAlignment="Bottom" FontSize="18" HorizontalAlignment="Right" Width="298" Click="buttonFullInstall_Click"/>
+                            <Button x:Name="buttonDownloadOnly" Content="Download Packages Only" Height="48" Margin="0,0,10,64" VerticalAlignment="Bottom" FontSize="18" HorizontalAlignment="Right" Width="298" Click="buttonDownloadOnly_Click"/>
+                            <Image HorizontalAlignment="Left" Height="120" VerticalAlignment="Top" Width="120" Source="/MWInstaller;component/res/icon.ico" Margin="0,1,0,0"/>
+                        </Grid>
+                    </Border>
                 </Grid>
             </TabItem>
             <TabItem Header="Configuration">

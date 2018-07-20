@@ -19,9 +19,21 @@ namespace MWInstaller
             Log.Clear();
             Log.Write("MW Installer started.\n");
 
+
+            if(!Utils.IsConnectedToInternet())
+            {
+                Log.Write("Couldn't connect to internet- quitting instead.\n");
+                MessageBox.Show("No internet connection, closing MW Installer.");
+                Application.Current.Shutdown();
+            }
+
             Installer.Initialize();
             Config.LoadConfig();
+
             PrefillConfiguration();
+
+            if(CheckInstallability())
+                installTab.IsSelected = true;
 
             Installer.StartEvent += installerStart;
             Installer.CompleteEvent += installerComplete;
@@ -62,7 +74,7 @@ namespace MWInstaller
                         packagesView.ItemsSource = packages;
                         packageListSuccessTick.Visibility = Visibility.Visible;
                         packageListRefresh.Visibility = Visibility.Hidden;
-                        packageTab.IsEnabled = true;
+                        installTab.IsEnabled = true;
                         CheckInstallability();
                         packageListInfo.Text = string.Empty;
                         return;
@@ -86,12 +98,12 @@ namespace MWInstaller
             }
 
             // Path didn't exist, or the package list didn't deserialize properly.
-            packageTab.IsEnabled = false;
+            installTab.IsEnabled = false;
             packageListSuccessTick.Visibility = Visibility.Hidden;
             CheckInstallability();
         }
 
-        private void CheckInstallability(bool forceFail = false)
+        private bool CheckInstallability(bool forceFail = false)
         {
             bool readyForInstall = true;
 
@@ -128,6 +140,13 @@ namespace MWInstaller
 
             installButton.IsEnabled = !nexusWarnings && readyForInstall;
             installReadyImage.Visibility = !nexusWarnings && readyForInstall ? Visibility.Visible : Visibility.Hidden;
+            return readyForInstall;
+        }
+
+        private void tabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            installPopup.Visibility = Visibility.Hidden;
+            CheckInstallability();
         }
     }
 }

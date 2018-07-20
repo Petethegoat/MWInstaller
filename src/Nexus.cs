@@ -49,10 +49,18 @@ namespace MWInstaller
             using(StreamReader reader = new StreamReader(stream))
             {
                 string s = reader.ReadToEnd();
-                downloadURL = Regex.Match(s, @"""URI"":""(?<url>.+)""").Groups["url"].Value;
+                var uri = NexusFileURI.Deserialize(s.Trim('[', ']'));
+                downloadURL = uri.URI;
+
+                //downloadURL = Regex.Match(s, @"""URI"":""(?<url>.+)""").Groups["url"].Value;
             }
 
-            return Regex.Unescape(downloadURL);
+            return downloadURL;
+        }
+
+        static public string FileNameFromNexusDownloadURL(string url)
+        {
+            return Regex.Match(url, @".*/(.*)\?.*").Groups[1].Value;
         }
 
         //from https://www.nexusmods.com/morrowind/mods/45712
@@ -120,6 +128,26 @@ namespace MWInstaller
             ms.Close();
 
             return files;
+        }
+    }
+
+    [DataContract]
+    internal class NexusFileURI
+    {
+        [DataMember] public string name { get; set; }
+        [DataMember] public string short_name { get; set; }
+        [DataMember] public string URI { get; set; }
+
+        public static NexusFileURI Deserialize(string json)
+        {
+            var uri = new NexusFileURI();
+            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            var settings = new DataContractJsonSerializerSettings();
+            var serializer = new DataContractJsonSerializer(typeof(NexusFileURI), settings);
+            uri = serializer.ReadObject(ms) as NexusFileURI;
+            ms.Close();
+
+            return uri;
         }
     }
 }

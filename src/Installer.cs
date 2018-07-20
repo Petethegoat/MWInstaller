@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -11,6 +10,8 @@ namespace MWInstaller
     static class Installer
     {
         private const int progressChunksPerPackage = 4;
+
+        public static bool doFullInstall = true;
 
         public static event EventHandler StartEvent;
         public static event EventHandler<bool> CompleteEvent;
@@ -29,23 +30,27 @@ namespace MWInstaller
                 List<Package> paks = (List<Package>)args.Argument;
 
                 CleanUpTempFiles(paks[0].list);  //TODO
-                worker.ReportProgress(0, "Downloading package...");
 
                 foreach(Package pak in paks)
                 {
-                    float progressChunk = ((paks.IndexOf(pak) + 1) * 4);
+                    float progressChunk = (paks.IndexOf(pak) + 1) * progressChunksPerPackage;
+
+                    worker.ReportProgress((int)progressChunk - 4, string.Format("Downloading {0}...", pak.name));
                     System.Threading.Thread.Sleep(10);
                     DownloadPackage(pak);
-                    worker.ReportProgress((int)progressChunk - 3, "Unpacking archive...");
-                    System.Threading.Thread.Sleep(10);
-                    Unpack(pak);
-                    worker.ReportProgress((int)progressChunk - 2, "Installing package...");
-                    System.Threading.Thread.Sleep(10);
-                    InstallPackage(pak);
-                    worker.ReportProgress((int)progressChunk - 1, "Cleaning up...");
-                    System.Threading.Thread.Sleep(10);
-                    DeleteArchive(pak);
-                    worker.ReportProgress((int)progressChunk, "Downloading package...");
+
+                    if(doFullInstall)
+                    {
+                        worker.ReportProgress((int)progressChunk - 3, "Unpacking archive...");
+                        System.Threading.Thread.Sleep(10);
+                        Unpack(pak);
+                        worker.ReportProgress((int)progressChunk - 2, string.Format("Installing {0}...", pak.name));
+                        System.Threading.Thread.Sleep(10);
+                        InstallPackage(pak);
+                        worker.ReportProgress((int)progressChunk - 1, "Cleaning up...");
+                        System.Threading.Thread.Sleep(10);
+                        DeleteArchive(pak);
+                    }
                 }
 
                 worker.ReportProgress(GetProgressBarLength(paks.Count), "Done!");
@@ -61,6 +66,9 @@ namespace MWInstaller
                 if(args.Error != null)
                 {
                     Log.Write(args.Error);
+                    if(args.Error.InnerException != null)
+                        Log.Write(args.Error.InnerException);
+
                     CompleteEvent.Invoke(null, false);
                     return;
                 }
@@ -103,7 +111,10 @@ namespace MWInstaller
             string url = pak.fileURL;
 
             if(pak.requiresNexus)
+            {
                 url = Nexus.GetNexusDownloadURL(pak.fileURL);
+                pak.fileName = Nexus.FileNameFromNexusDownloadURL(url);
+            }
 
             var webClient = new WebClient();
             webClient.DownloadFile(url, pak.fileName);
@@ -178,7 +189,8 @@ namespace MWInstaller
 
         private static void DeleteArchive(Package pak)
         {
-            File.Delete(pak.fileName);
+            if(File.Exists(pak.fileName))
+                File.Delete(pak.fileName);
         }
 
         private static bool ExcludedByFilter(FileInfo file, Package pak)
