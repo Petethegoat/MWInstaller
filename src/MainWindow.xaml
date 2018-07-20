@@ -119,8 +119,8 @@
             </TabItem>
             <TabItem Header="About">
                 <Grid Background="#FFE5E5E5">
-                    <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="80" Width="764"><Run Text="Thank"/><Run Text="s for trying MW Installer. This is a work in progress, and it's far from finished. You can contribute, or just follow along on G"/><Run Text="ithub below."/></TextBlock>
-                    <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="MW Installer 0.3" VerticalAlignment="Top" Width="382"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="80" Width="764"><Run Text="Thank"/><Run Text="s for trying MW Installer. This is a work in progress, and it's far from finished. You can contribute, or just follow along on G"/><Run Text="ithub below."/></TextBlock>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,364,0,0" TextWrapping="Wrap" Text="MW Installer 0.4" VerticalAlignment="Top" Width="382"/>
                     <Button x:Name="githubButton" Content="Github" HorizontalAlignment="Left" Margin="646,358,0,0" VerticalAlignment="Top" Width="128" Click="githubButton_Click"/>
                     <Button x:Name="openLog" Content="Open Debug Log" HorizontalAlignment="Left" Margin="646,331,0,0" VerticalAlignment="Top" Width="128" Click="openLog_Click"/>
                     <CheckBox x:Name="hideStartupWarning" Content="Hide Startup Warning" HorizontalAlignment="Left" Margin="10,95,0,0" VerticalAlignment="Top" Checked="hideStartupWarning_Changed" Unchecked="hideStartupWarning_Changed"/>
