@@ -88,6 +88,44 @@ namespace MWInstaller
 
             return files;
         }
+
+        static public string GetNexusMod(string url)
+        {
+            string mod = "it didnt work fuck";
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.ContentType = "application/json";
+            req.Headers.Add("APIKEY", apiKey);
+            using(HttpWebResponse response = (HttpWebResponse)req.GetResponse())
+            using(Stream stream = response.GetResponseStream())
+            using(StreamReader reader = new StreamReader(stream))
+            {
+                string s = reader.ReadToEnd();
+                mod = s;
+            }
+
+            return mod;
+        }
+    }
+
+    [DataContract]
+    internal class NexusMod
+    {
+        [DataMember] public string name { get; set; }
+        [DataMember] public string summary { get; set; }
+        [DataMember] public string author { get; set; }
+
+        public static NexusMod Deserialize(string json)
+        {
+            var mod = new NexusMod();
+            MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(json));
+            var settings = new DataContractJsonSerializerSettings();
+            settings.UseSimpleDictionaryFormat = true;
+            var serializer = new DataContractJsonSerializer(mod.GetType(), settings);
+            mod = serializer.ReadObject(ms) as NexusMod;
+            ms.Close();
+
+            return mod;
+        }
     }
 
     [DataContract]

@@ -23,6 +23,11 @@ namespace MWInstaller
         internal string url;
         internal PackageList list;
 
+        public static string CreatePackageString(string name, string author, string fileURL)
+        {
+            return string.Format("{{\n    \"name\": \"{0}\",\n    \"author\": \"{1}\",\n    \"fileURL\": \"{2}\"\n}}", name, author, fileURL);
+        }
+
         public static Package Deserialize(string url, string json, PackageList list)
         {
             var p = new Package();

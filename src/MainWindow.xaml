@@ -105,15 +105,12 @@
                             <TextBox x:Name="inputURL" HorizontalAlignment="Left" Height="23" Margin="80,12,0,0" VerticalAlignment="Top" Width="684" TextChanged="inputURL_TextChanged"/>
                             <Label x:Name="label" Content="Input URL:" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top"/>
                             <Button x:Name="getURL" Content="Get File List" HorizontalAlignment="Left" Margin="10,40,0,0" VerticalAlignment="Top" Width="102" Height="38" Click="getURL_Click" IsEnabled="False"/>
-                            <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" VerticalAlignment="Top" Width="411" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
+                            <TextBox x:Name="apiURL" HorizontalAlignment="Left" Height="23" Margin="234,48,0,0" VerticalAlignment="Top" Width="292" TextChanged="apiURL_TextChanged" IsReadOnly="True"/>
                             <Label x:Name="label_Copy" Content="API Download URL:" HorizontalAlignment="Left" Margin="117,46,0,0" VerticalAlignment="Top"/>
-                            <Button x:Name="clipboard" Content="Copy to Clipboard" HorizontalAlignment="Left" Margin="650,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="clipboard_Click" IsEnabled="False"/>
+                            <Button x:Name="clipboard" Content="Copy to Clipboard" HorizontalAlignment="Left" Margin="531,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="clipboard_Click" IsEnabled="False"/>
+                            <Button x:Name="quickPackage" Content="Copy Quick Package" HorizontalAlignment="Left" Margin="650,40,0,0" VerticalAlignment="Top" Width="114" RenderTransformOrigin="0.01,0.228" Height="38" Click="quickPackage_Click" IsEnabled="False"/>
 
                         </Grid>
-                    </TabItem>
-                    <TabItem Header="Nexus Quick Package">
-                    </TabItem>
-                    <TabItem Header="Collate Packages">
                     </TabItem>
                 </TabControl>
             </TabItem>
